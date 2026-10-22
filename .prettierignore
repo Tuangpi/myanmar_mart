@@ -1,0 +1,9 @@
+dist
+node_modules
+coverage
+*.tsbuildinfo
+package-lock.json
+
+# Product documents (not code; left in the author's original formatting)
+docs
+README.md

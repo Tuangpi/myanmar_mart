@@ -1,0 +1,43 @@
+# MyanMart — Progress
+
+## Current State
+
+- **Current task:** None
+- **Most recently completed:** T001 — Monorepo scaffold and toolchain.
+- **Unfinished work:** T002–T020 all `TODO` in `TASKS.md`. The monorepo scaffold exists and passes build, typecheck, lint, and tests. No database, auth, or feature code yet.
+- **Blockers:** None.
+- **Recommended next task:** T002 — Database schema, migrations, and seed.
+
+### Verified environment
+
+Checked 2026-10-22:
+
+- Node.js v24.21.0, npm 11.19.0, npm registry reachable.
+- PostgreSQL 18.6 running locally on port 5432; `psql -U postgres` connects without a password (local trust auth). No Docker. No pnpm, yarn, or bun installed.
+- Git: one commit (`first commit`). `README.md` has uncommitted modifications and `docs/` is untracked — both are the user's own work and were left untouched.
+
+### Untracked / uncommitted
+
+- `README.md` — modified by the user.
+- `docs/` — untracked (ARCHITECTURE, DATABASE_API, IMPLEMENTATION, PROJECT, REQUIREMENTS).
+- `PROJECT.md`, `TASKS.md`, `PROGRESS.md` — new tracking files.
+- Entire `apps/`, `packages/`, and root scaffold — new, uncommitted.
+
+## Task notes
+
+### T001 — Monorepo scaffold and toolchain (DONE)
+
+- **Result:** npm-workspaces monorepo created: `apps/api` (Express 5 + TypeScript, `tsx` dev / `tsc` build), `apps/web` (Vite 7 + React 19 + Tailwind CSS 4), `packages/shared` (Zod schemas, constants, shared types). Root TypeScript project references, ESLint 9 flat config, Prettier config, `.gitignore`, and a `.env.example` for the API. API exposes `GET /api/health` behind a standardized `{ success, data }` / `{ success, error }` envelope with a central error handler.
+- **Files changed:** root `package.json`, `tsconfig.json`, `eslint.config.js`, `.prettierrc.json`, `.prettierignore`, `.gitignore`; `packages/shared/{package.json,tsconfig.json,src/*}`; `apps/api/{package.json,tsconfig.json,tsconfig.test.json,vitest.config.ts,.env.example,src/*}`; `apps/web/{package.json,tsconfig.json,tsconfig.app.json,tsconfig.node.json,vite.config.ts,vitest.config.ts,index.html,src/*}`.
+- **Decisions:** TypeScript 5.9 rather than 7.0 (`typescript-eslint` 8.x requires `<6.1.0`). Vite 7 rather than 8 (stable peer support with `@vitejs/plugin-react` 5). Vitest 5 rather than 3 — Vitest 3 pulls a vulnerable `tinypool` with a critical prototype-pollution/RCE advisory. API built with plain `tsc` (no bundler) so `dist/` runs directly on Node ESM. `packages/shared` compiles to `dist/` and is consumed via the workspace symlink; the root `predev` script builds it first. Web dev server proxies `/api` to `http://localhost:4000`.
+- **Checks run:** `npm install` (0 vulnerabilities, 350 packages). `npm run build` — shared, api, and web all succeed. `npm run typecheck` — passes across all three workspaces. `npm run lint` — 0 errors, 0 warnings. `npm test` — API 2 tests pass (health 200, 404 envelope), web 1 test passes (App renders). Live servers: API booted via `npm run dev:api` and returned HTTP 200 with the correct JSON body on `/api/health`; web booted via `npm run dev:web` and served the app with the `/api` proxy returning the health payload. Both servers stopped afterward.
+- **Follow-up:** npm warned that `esbuild`'s postinstall script was not approved under npm 11's `allowScripts` gate. Builds and dev servers still work, so no approval was needed. Revisit if a tool needs esbuild's native binary. Prettier ignores `docs/` and `README.md` so the author's original formatting is not rewritten by `npm run format`.
+- **Extra verification:** A clean rebuild (all `dist/` and `.tsbuildinfo` removed) succeeds, and the compiled API runs directly on Node ESM via `node dist/index.js`, returning HTTP 200 on `/api/health`. All dev servers were stopped afterward.
+
+### Setup — Project tracking initialized (DONE)
+
+- **Result:** Created `PROJECT.md`, `TASKS.md`, and `PROGRESS.md` at the repository root, derived from the five documents in `docs/`. Decomposed the six documented phases into 20 tasks with stable IDs, dependencies, expected results, and completion checks.
+- **Files changed:** `PROJECT.md`, `TASKS.md`, `PROGRESS.md`.
+- **Decisions:** npm workspaces over pnpm (only npm is installed); Prisma schema at the repository root; JWT in an httpOnly cookie; money as integer MMK; local filesystem image storage behind a storage interface. Recorded as D1–D8 in `PROJECT.md`.
+- **Checks run:** Read all five documents in `docs/`; inspected the repository tree and git history; confirmed Node, npm, PostgreSQL versions and registry connectivity.
+- **Follow-up:** `docs/` and the updated `README.md` are still uncommitted.
