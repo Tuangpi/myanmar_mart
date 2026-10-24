@@ -1,0 +1,288 @@
+// Prisma schema — MyanMart
+// Money is stored as integer MMK (no minor unit in local practice).
+// See docs/DATABASE_API.md for the canonical table and column definitions.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  BUYER
+  SELLER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum StoreStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum CategoryStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAYMENT_SUBMITTED
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUBMITTED
+  VERIFIED
+  REJECTED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  COD
+  KBZPAY
+  WAVEPAY
+  BANK_TRANSFER
+}
+
+model User {
+  id         String      @id @default(uuid())
+  name       String
+  email      String      @unique
+  phone      String?
+  passwordHash String   @map("password_hash")
+  role       UserRole    @default(BUYER)
+  status     UserStatus  @default(ACTIVE)
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
+
+  addresses   Address[]
+  carts       Cart[]
+  orders      Order[]
+  stores      Store[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model Address {
+  id           String   @id @default(uuid())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String   @map("user_id")
+  recipientName String  @map("recipient_name")
+  phone        String
+  region       String
+  city         String
+  address      String
+  notes        String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("addresses")
+}
+
+model Store {
+  id          String      @id @default(uuid())
+  owner       User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     String      @map("owner_id")
+  name        String
+  slug        String      @unique
+  description String?
+  logoUrl     String?     @map("logo_url")
+  status      StoreStatus @default(PENDING)
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  products   Product[]
+  orderItems OrderItem[]
+
+  @@index([ownerId])
+  @@index([slug])
+  @@map("stores")
+}
+
+model Category {
+  id        String       @id @default(uuid())
+  name      String
+  slug      String       @unique
+  parent    Category?    @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  parentId  String?      @map("parent_id")
+  status    CategoryStatus @default(ACTIVE)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  children  Category[]   @relation("CategoryHierarchy")
+  products  Product[]
+
+  @@index([parentId])
+  @@index([slug])
+  @@map("categories")
+}
+
+model Product {
+  id          String       @id @default(uuid())
+  store       Store        @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId     String       @map("store_id")
+  category    Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categoryId  String?      @map("category_id")
+  name        String
+  slug        String       @unique
+  description String?
+  price       Int          // MMK integer
+  stock       Int
+  status      ProductStatus @default(DRAFT)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  images     ProductImage[]
+  orderItems OrderItem[]
+  cartItems  CartItem[]
+
+  @@index([storeId])
+  @@index([categoryId])
+  @@index([slug])
+  @@index([status])
+  @@map("products")
+}
+
+model ProductImage {
+  id        String   @id @default(uuid())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String   @map("product_id")
+  imageUrl  String   @map("image_url")
+  sortOrder Int      @map("sort_order") @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([productId])
+  @@map("product_images")
+}
+
+model Cart {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  items CartItem[]
+
+  @@index([userId])
+  @@map("carts")
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId    String   @map("cart_id")
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String   @map("product_id")
+  quantity  Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([cartId])
+  @@index([productId])
+  @@unique([cartId, productId])
+  @@map("cart_items")
+}
+
+model Order {
+  id             String        @id @default(uuid())
+  orderNumber    String        @map("order_number") @unique
+  buyer          User          @relation(fields: [buyerId], references: [id])
+  buyerId        String        @map("buyer_id")
+  addressSnapshot Json         @map("address_snapshot")
+  subtotal       Int           // MMK integer
+  deliveryFee    Int           @map("delivery_fee") // MMK integer
+  total          Int           // MMK integer
+  paymentMethod  PaymentMethod @map("payment_method")
+  paymentStatus  PaymentStatus @map("payment_status") @default(PENDING)
+  status         OrderStatus   @default(PENDING_PAYMENT)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  items     OrderItem[]
+  payments   Payment[]
+  statusHistory OrderStatusHistory[]
+
+  @@index([buyerId])
+  @@index([orderNumber])
+  @@index([status])
+  @@index([paymentStatus])
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String   @map("order_id")
+  store       Store    @relation(fields: [storeId], references: [id])
+  storeId     String   @map("store_id")
+  product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productId   String?  @map("product_id")
+  productName String   @map("product_name")
+  unitPrice   Int      @map("unit_price") // MMK integer
+  quantity    Int
+  subtotal    Int      // MMK integer
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([orderId])
+  @@index([storeId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+model Payment {
+  id                 String        @id @default(uuid())
+  order              Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId            String        @map("order_id")
+  method             PaymentMethod
+  amount             Int           // MMK integer
+  transactionReference String?     @map("transaction_reference")
+  receiptUrl         String?       @map("receipt_url")
+  status             PaymentStatus @default(PENDING)
+  verifiedBy         String?       @map("verified_by")
+  createdAt          DateTime      @default(now()) @map("created_at")
+
+  @@index([orderId])
+  @@index([status])
+  @@map("payments")
+}
+
+model OrderStatusHistory {
+  id        String   @id @default(uuid())
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String   @map("order_id")
+  oldStatus String   @map("old_status")
+  newStatus String   @map("new_status")
+  changedBy String?  @map("changed_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([orderId])
+  @@index([createdAt])
+  @@map("order_status_history")
+}

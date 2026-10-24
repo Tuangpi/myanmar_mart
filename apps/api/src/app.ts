@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { env } from './config/env.js';
 import { healthModule } from './modules/health/health.module.js';
+import { authModule } from './modules/auth/auth.module.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 
 export function createApp() {
@@ -29,6 +30,7 @@ export function createApp() {
   );
 
   app.use(env.API_PREFIX, healthModule);
+  app.use(env.API_PREFIX, authModule);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

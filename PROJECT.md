@@ -79,7 +79,7 @@ Backend modules: Auth and Users; Sellers and Stores; Products and Categories; Ca
 | #   | Decision                                                               | Rationale                                                                                  |
 | --- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | D1  | npm workspaces monorepo (`apps/web`, `apps/api`, `packages/shared`)    | Matches `docs/ARCHITECTURE.md`; npm is the only package manager installed                  |
-| D2  | Prisma schema at repo root (`prisma/schema.prisma`)                    | Matches the documented structure; single source of truth for migrations                    |
+| D2  | Prisma schema under `apps/api/prisma/schema.prisma`                    | Colocated with the only Prisma consumer (the API); single source of truth for migrations   |
 | D3  | JWT access token in an httpOnly, SameSite cookie                       | Satisfies "secure session or JWT-based authentication" and keeps auth stateless            |
 | D4  | Money stored as integer MMK                                            | Kyat has no minor unit in local practice; avoids floating-point rounding errors            |
 | D5  | Local filesystem image storage behind a storage interface              | Matches the spec; swap for S3-compatible storage in production without changing call sites |

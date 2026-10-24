@@ -15,14 +15,14 @@ All tasks start at `TODO` unless noted. A task is `DONE` only when its expected 
 
 ### T002 — Database schema, migrations, and seed
 
-- **Status:** TODO
-- **Expected result:** Prisma schema at `prisma/schema.prisma` with the 12 core tables (users, addresses, stores, categories, products, product_images, carts, cart_items, orders, order_items, payments, order_status_history) using UUID primary keys, foreign keys, timestamps, and indexes; money as integer MMK; initial migration plus a seed script for admin, categories, and a demo seller.
-- **Completion check:** `prisma migrate dev` applies cleanly on a fresh local database; `prisma migrate reset` plus seed succeeds; `prisma studio` lists all tables with the expected columns and relations.
+- **Status:** DONE
+- **Expected result:** Prisma schema at `apps/api/prisma/schema.prisma` with the 12 core tables (users, addresses, stores, categories, products, product_images, carts, cart_items, orders, order_items, payments, order_status_history) using UUID primary keys, foreign keys, timestamps, and indexes; money as integer MMK; initial migration plus a seed script for admin, categories, and a demo seller. Migrations and seed scripts also live under `apps/api/prisma/`.
+- **Completion check:** `prisma migrate dev` applies cleanly on a fresh local database from `apps/api/`; `prisma migrate reset` plus seed succeeds; `prisma studio` lists all tables with the expected columns and relations.
 - **Dependencies:** T001
 
 ### T003 — Authentication and role-based access control
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** Register, login, logout, and `GET /api/auth/me`; password hashing; JWT in an httpOnly cookie; `requireAuth` and `requireRole` middleware for buyer, seller, and admin; rate limiting on auth endpoints; standardized error responses.
 - **Completion check:** API tests cover register, login, logout, duplicate email, wrong password, missing token, wrong role, and forbidden admin access.
 - **Dependencies:** T002

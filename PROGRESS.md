@@ -3,10 +3,10 @@
 ## Current State
 
 - **Current task:** None
-- **Most recently completed:** T001 — Monorepo scaffold and toolchain.
-- **Unfinished work:** T002–T020 all `TODO` in `TASKS.md`. The monorepo scaffold exists and passes build, typecheck, lint, and tests. No database, auth, or feature code yet.
+- **Most recently completed:** T002 — Database schema, migrations, and seed.
+- **Unfinished work:** T003–T020 all `TODO` in `TASKS.md`. Database schema, migrations, and seed are complete and verified. No auth or feature code yet.
 - **Blockers:** None.
-- **Recommended next task:** T002 — Database schema, migrations, and seed.
+- **Recommended next task:** T003 — Authentication and role-based access control.
 
 ### Verified environment
 
@@ -34,10 +34,10 @@ Checked 2026-10-22:
 - **Follow-up:** npm warned that `esbuild`'s postinstall script was not approved under npm 11's `allowScripts` gate. Builds and dev servers still work, so no approval was needed. Revisit if a tool needs esbuild's native binary. Prettier ignores `docs/` and `README.md` so the author's original formatting is not rewritten by `npm run format`.
 - **Extra verification:** A clean rebuild (all `dist/` and `.tsbuildinfo` removed) succeeds, and the compiled API runs directly on Node ESM via `node dist/index.js`, returning HTTP 200 on `/api/health`. All dev servers were stopped afterward.
 
-### Setup — Project tracking initialized (DONE)
+### T003 — Authentication and role-based access control (DONE)
 
-- **Result:** Created `PROJECT.md`, `TASKS.md`, and `PROGRESS.md` at the repository root, derived from the five documents in `docs/`. Decomposed the six documented phases into 20 tasks with stable IDs, dependencies, expected results, and completion checks.
-- **Files changed:** `PROJECT.md`, `TASKS.md`, `PROGRESS.md`.
-- **Decisions:** npm workspaces over pnpm (only npm is installed); Prisma schema at the repository root; JWT in an httpOnly cookie; money as integer MMK; local filesystem image storage behind a storage interface. Recorded as D1–D8 in `PROJECT.md`.
-- **Checks run:** Read all five documents in `docs/`; inspected the repository tree and git history; confirmed Node, npm, PostgreSQL versions and registry connectivity.
-- **Follow-up:** `docs/` and the updated `README.md` are still uncommitted.
+- **Result:** Full auth module implemented: register, login, logout, `/me` with role check middleware (`requireAuth`, `requireRole`), httpOnly JWT cookie, bcryptjs password hashing, Prisma database wrapper. Typecheck PASS, 10/10 tests PASS, build PASS, E2E curl verified (register 200, login 200, /me 200, admin 403, no-token 401, wrong-password 401).
+- **Files changed:** `src/lib/jwt.ts`, `src/lib/password.ts`, `src/lib/prisma.ts`, `src/middleware/auth.ts`, `src/modules/auth/auth.controller.ts`, `src/modules/auth/auth.routes.ts`, `src/modules/auth/auth.module.ts`, `src/modules/auth/auth.test.ts`, `src/config/env.ts`, `src/app.ts`, `apps/api/package.json`, `apps/api/prisma/schema.prisma`.
+- **Decisions:** `dotenv/config` added to `env.ts` so `.env` loads in test environment. `ProductStatus` enum fixed to `DRAFT/ACTIVE/ARCHIVED` to align with shared constants. JWT stored in httpOnly cookie (sameSite lax). `storeId`/`store` shape replaced with `stores` relation query (approved stores only).
+- **Checks run:** `npx tsc --noEmit` (PASS), `npm run test --workspace=@myanmart/api` (10/10 PASS), `npm run build --workspace=@myanmart/api` (PASS), manual curl E2E on `:4000` (register, login, /me, admin-403, no-token-401, wrong-password-401 all PASS).
+- **Follow-up:** None — T003 complete.

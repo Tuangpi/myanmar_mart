@@ -36,6 +36,8 @@ Use a modular monolith. Keep frontend and backend separate, but maintain one bac
     │   │       ├── hooks/
     │   │       └── lib/
     │   └── api/
+    │       ├── prisma/
+    │       │   └── schema.prisma
     │       └── src/
     │           ├── modules/
     │           ├── middleware/
@@ -43,8 +45,6 @@ Use a modular monolith. Keep frontend and backend separate, but maintain one bac
     │           └── app.ts
     ├── packages/
     │   └── shared/
-    ├── prisma/
-    │   └── schema.prisma
     ├── docs/
     └── README.md
 
