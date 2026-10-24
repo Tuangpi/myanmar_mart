@@ -1,0 +1,180 @@
+{
+  "app": {
+    "name": "မြန်မာ Mart",
+    "tagline": "အမျိုးသားများအတွက် ကိုယ်ပိုင်အိမ်အိမ်စီကုန် အထောက်အပံ့။"
+  },
+  "layout": {
+    "nav": {
+      "home": "ပင်မ",
+      "catalog": "ကိုင်းပစ္စည်းများ",
+      "signIn": "ဝင်ရောက်သည်",
+      "signUp": "ရှင်းပေါ်",
+      "cart": "ကားတ်",
+      "orders": "၀က်းအောက်",
+      "seller": "ဖော်မာ",
+      "admin": "ချ企管"
+    },
+    "footer": {
+      "copyright": "MyanMart © 2026. အားလုံးသို့ ဘဝချောင်းငှက်။"
+    }
+  },
+  "auth": {
+    "title": "MyanMart ထဲသို့ဝင်ရန်",
+    "email": "အီးမေးလူ",
+    "phone": "ဖုန်းနံပါတ်",
+    "password": "စကားဝှက်",
+    "confirmPassword": "စကားဝှက်ကိုအတည်ပြုပါ",
+    "name": "အမည်",
+    "signIn": "ဝင်ရောက်ပါ",
+    "signUp": "နောက်သို့ဆောက်ပါ",
+    "forgotPassword": "စကားဝှက်မှတ်ပုံတွေ့ပါလား?",
+    "or": " Burmese",
+    "privacyPolicy": "အာမခံချက်",
+    "termsOfService": "ဝန်ဆောက်ချက်များ",
+    "signOut": "ထွက်သည်",
+    "loading": "တင်နေသည်..."
+  },
+  "catalog": {
+    "title": "ကိုင်းပစ္စည်းများ",
+    "allCategories": "အကုန်သောကား",
+    "search": "ကိုင်းပစ္စည်းရှာပါ...",
+    "filter": "ဖယ်ရှား",
+    "sort": "အလိုက်လိုက်",
+    "reset": "ပြန်လည်သတ်မှတ်",
+    "results": "ရလဒ်",
+    "noResults": "သင့်ရှာဖွေမှုနှင့်ကိုက်ညီသောကိုင်းပစ္စည်းမရှိပါ။",
+    "loadMore": "ပိုပြီးဖော်ပြပါ"
+  },
+  "product": {
+    "title": "ကိုင်းပစ္စည်း",
+    "description": "ဖော်မာ",
+    "price": " Dương",
+    "stock": "စာတ်",
+    "soldBy": "ဖော်မာ",
+    "addToCart": "ကားတ်ဖြည့်ပါ",
+    "outOfStock": "စာတ်မဟုတ်ပါ",
+    "buyNow": "ဂုဏ်ပြုပါ",
+    "sku": "SKU",
+    "brand": "Brand",
+    "reviews": "ရှာဖွေ",
+    "noReviews": "အခုအထိရှာဖွေမှုမရှိပါ။"
+  },
+  "cart": {
+    "title": "ကားတ်",
+    "subtotal": " Subtotal",
+    "shipping": " ပို့ဆောင်",
+    "tax": " ပမာဏ",
+    "total": " အပြည့်",
+    "checkout": " Checkout",
+    "clearCart": " ကားတ်ရှင်း",
+    "remove": " ဖယ်",
+    "quantity": " အရေအတွက်",
+    "noItems": " ကားတ်တွင်မရှိပါ။",
+    "updateFailed": "ကားတ်တင်ရန်မအောင်မြင်ပါ။"
+  },
+  "checkout": {
+    "title": " Checkout",
+    "contact": " ဆက်သွယ်",
+    "address": " ပို့ဆောင်",
+    "payment": " အကြောင်း",
+    "review": " ဆန်းသာ",
+    "orderSummary": " ကားတ်အမှတ်",
+    "placeOrder": " ကားတ်ချင်",
+    "orderPlaced": " ကားတ်ထည့်ပြီး",
+    "thankYou": " ကားတ်ကိုပေးချင်းခွင့်ပြုပါ။"
+  },
+  "order": {
+    "title": "၀က်အောက်",
+    "history": "၀က်အောက်မှတ်",
+    "details": "၀က်အောက်အသေးစိတ်",
+    "status": " အခြေအနေ",
+    "tracking": " တင်ပါ",
+    "cancel": " ကိုင်",
+    "noOrders": " သင့်တွင်မရှိပါ။",
+    "placedOn": " ခံစား",
+    "totalAmount": " အပြည့်အရေအတွက်",
+    "items": " ကိုင်း",
+    "track": " တင်ပါ"
+  },
+  "seller": {
+    "title": "ဖော်မာ",
+    "storeName": " Store name",
+    "description": "ဖော်မာ",
+    "contact": " ဆက်သွယ်",
+    "products": " ကိုင်း",
+    "applyNow": " နောက်သို့",
+    "myStore": " ကိုယ့်ဖော်",
+    "editStore": " ကိုယ့်ဖော်ပြင်",
+    "publishProducts": " ကိုင်းပြောင်း"
+  },
+  "admin": {
+    "title": "ခန့်",
+    "dashboard": " Dashboard",
+    "users": " User",
+    "sellers": " Seller",
+    "products": " ကိုင်း",
+    "orders": " Order",
+    "settings": " စောင့်",
+    "moderation": " ချ企管",
+    "review": " ရှာ",
+    "approve": " ချ企",
+    "reject": " ချ企",
+    "suspend": " ချ企",
+    "activate": " ချ企"
+  },
+  "pagination": {
+    "page": " Page",
+    "of": " of",
+    "next": " နောက်",
+    "previous": " ဝင်",
+    "goToPage": " Pageသို့ရောက်"
+  },
+  "notifications": {
+    "success": " ကောင်",
+    "error": " Error",
+    "warning": " သတိ",
+    "info": " သတ်",
+    "ok": " OK",
+    "cancel": " အမှတ်",
+    "close": " ချိတ်",
+    "loadFailed": " တင်ရန်မအောင်မြင်ပါ။"
+  },
+  "forms": {
+    "required": " ဝန်ဆောက်",
+    "invalid": " မှား",
+    "tooShort": " လျှော Gund",
+    "tooLong": " လျှော Gund",
+    "invalidEmail": " မှား",
+    "invalidPhone": " မှား",
+    "passwordMismatch": " ကိုကိုက်ပါ",
+    "minLength": " {min} မှတ်",
+    "maxLength": " {max} မှတ်"
+  },
+  "common": {
+    "loading": " တင်နေ",
+    "save": " မြှင့်",
+    "cancel": " ဘြာ",
+    "delete": " ဖယ်",
+    "edit": " ပြင်",
+    "view": " မြင့်",
+    "back": " ပြန်",
+    "continue": " ကျေး",
+    "select": " ရွေး",
+    "search": " ရှာ",
+    "filter": " ဖယ်",
+    "sort": " အလိုက်",
+    "date": " ခံ",
+    "email": " ပြ",
+    "phone": " ဖုန်",
+    "name": " အမည်",
+    "actions": " ကျေး"
+  },
+  "errors": {
+    "failed": " မှား",
+    "notFound": " မတွေ့",
+    "unauthorized": " continue ရန် ဝင်ရောက်ပါ",
+    "forbidden": " ဤအရာကိုလုပ်နိုင်ခြင်းမရှိ",
+    "server": " Server error. အချိန်ကျပါကပြန်လိုက်ပါ",
+    "rateLimit": " များပြီးခေါ်ပါ. ခဏနေပါ"
+  }
+}

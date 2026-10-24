@@ -20,7 +20,10 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "paths": {
+      "@myanmart/*": ["/home/tuangpi/Documents/My notes/myanmar_mart/node_modules/@myanmart/*"]
+    }
   },
   "include": ["src"]
 }

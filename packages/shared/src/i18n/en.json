@@ -1,0 +1,180 @@
+{
+  "app": {
+    "name": "MyanMart",
+    "tagline": "A Myanmar-first multi-vendor marketplace."
+  },
+  "layout": {
+    "nav": {
+      "home": "Home",
+      "catalog": "Catalog",
+      "signIn": "Sign in",
+      "signUp": "Sign up",
+      "cart": "Cart",
+      "orders": "Orders",
+      "seller": "Seller",
+      "admin": "Admin"
+    },
+    "footer": {
+      "copyright": "MyanMart © 2026. All rights reserved."
+    }
+  },
+  "auth": {
+    "title": "Sign in to MyanMart",
+    "email": "Email",
+    "phone": "Phone",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "name": "Name",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "forgotPassword": "Forgot password?",
+    "or": "or",
+    "privacyPolicy": "Privacy policy",
+    "termsOfService": "Terms of service",
+    "signOut": "Sign out",
+    "loading": "Loading..."
+  },
+  "catalog": {
+    "title": "Catalog",
+    "allCategories": "All categories",
+    "search": "Search products...",
+    "filter": "Filter",
+    "sort": "Sort",
+    "reset": "Reset",
+    "results": "results",
+    "noResults": "No products match your search.",
+    "loadMore": "Load more"
+  },
+  "product": {
+    "title": "Product",
+    "description": "Description",
+    "price": "Price",
+    "stock": "Stock",
+    "soldBy": "Sold by",
+    "addToCart": "Add to cart",
+    "outOfStock": "Out of stock",
+    "buyNow": "Buy now",
+    "sku": "SKU",
+    "brand": "Brand",
+    "reviews": "Reviews",
+    "noReviews": "No reviews yet."
+  },
+  "cart": {
+    "title": "Cart",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "tax": "Tax",
+    "total": "Total",
+    "checkout": "Checkout",
+    "clearCart": "Clear cart",
+    "remove": "Remove",
+    "quantity": "Quantity",
+    "noItems": "Your cart is empty.",
+    "updateFailed": "Failed to update cart."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "contact": "Contact",
+    "address": "Delivery address",
+    "payment": "Payment",
+    "review": "Review",
+    "orderSummary": "Order summary",
+    "placeOrder": "Place order",
+    "orderPlaced": "Order placed",
+    "thankYou": "Thank you for your order!"
+  },
+  "order": {
+    "title": "Orders",
+    "history": "Order history",
+    "details": "Order details",
+    "status": "Status",
+    "tracking": "Tracking",
+    "cancel": "Cancel",
+    "noOrders": "You have no orders yet.",
+    "placedOn": "Placed on",
+    "totalAmount": "Total amount",
+    "items": "items",
+    "track": "Track order"
+  },
+  "seller": {
+    "title": "Seller",
+    "storeName": "Store name",
+    "description": "Description",
+    "contact": "Contact",
+    "products": "Products",
+    "applyNow": "Apply now",
+    "myStore": "My store",
+    "editStore": "Edit store",
+    "publishProducts": "Publish products"
+  },
+  "admin": {
+    "title": "Admin",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "sellers": "Sellers",
+    "products": "Products",
+    "orders": "Orders",
+    "settings": "Settings",
+    "moderation": "Moderation",
+    "review": "Review",
+    "approve": "Approve",
+    "reject": "Reject",
+    "suspend": "Suspend",
+    "activate": "Activate"
+  },
+  "pagination": {
+    "page": "Page",
+    "of": "of",
+    "next": "Next",
+    "previous": "Previous",
+    "goToPage": "Go to page"
+  },
+  "notifications": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "close": "Close",
+    "loadFailed": "Failed to load"
+  },
+  "forms": {
+    "required": "This field is required",
+    "invalid": "This field is invalid",
+    "tooShort": "Too short",
+    "tooLong": "Too long",
+    "invalidEmail": "Invalid email",
+    "invalidPhone": "Invalid phone number",
+    "passwordMismatch": "Passwords do not match",
+    "minLength": "Must be at least {min} characters",
+    "maxLength": "Must be at most {max} characters"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "back": "Back",
+    "continue": "Continue",
+    "select": "Select",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "date": "Date",
+    "email": "Email",
+    "phone": "Phone",
+    "name": "Name",
+    "actions": "Actions"
+  },
+  "errors": {
+    "failed": "Something went wrong",
+    "notFound": "Not found",
+    "unauthorized": "Please sign in to continue",
+    "forbidden": "You do not have permission to do this",
+    "server": "Server error. Please try again later.",
+    "rateLimit": "Too many requests. Please wait a moment."
+  }
+}

@@ -41,3 +41,16 @@ Checked 2026-10-22:
 - **Decisions:** `dotenv/config` added to `env.ts` so `.env` loads in test environment. `ProductStatus` enum fixed to `DRAFT/ACTIVE/ARCHIVED` to align with shared constants. JWT stored in httpOnly cookie (sameSite lax). `storeId`/`store` shape replaced with `stores` relation query (approved stores only).
 - **Checks run:** `npx tsc --noEmit` (PASS), `npm run test --workspace=@myanmart/api` (10/10 PASS), `npm run build --workspace=@myanmart/api` (PASS), manual curl E2E on `:4000` (register, login, /me, admin-403, no-token-401, wrong-password-401 all PASS).
 - **Follow-up:** None — T003 complete.
+
+
+### T004 — Application shell, layout, and i18n (DONE)
+- **Status:** DONE
+- **Expected result:** Responsive mobile-first layout with Tailwind CSS and shadcn-style UI primitives; Burmese (`my`) and English (`en`) language support with a language switcher and persisted choice; global UI primitives in `packages/shared` where reusable; English + Burmese visible UI text.
+- **Completion check:** App renders at mobile and desktop widths; switching language updates visible UI text and the choice survives a page reload.
+- **Dependencies:** T001
+
+## Notes
+
+- i18n layer, primitive components, layout, and shell integration test go here.
+- Backend unchanged for this task.
+

@@ -29,9 +29,9 @@ All tasks start at `TODO` unless noted. A task is `DONE` only when its expected 
 
 ### T004 — Application shell, layout, and i18n
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** Responsive mobile-first layout with Tailwind CSS and shadcn/ui; Burmese and English language support with a language switcher and persisted choice; shared UI primitives in `packages/shared` where reusable.
-- **Completion check:** App renders at mobile and desktop widths; switching language updates visible UI text and the choice survives a page reload.
+- **Completion check:** App renders at mobile and desktop widths; switching language updates visible UI text and the choice survives a page reload; page components (Home, Catalog, Product Detail, Cart, Orders, Profile) use I18nLayout and translations.
 - **Dependencies:** T001
 
 ## Phase 2 — Marketplace
