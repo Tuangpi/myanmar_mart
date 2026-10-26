@@ -9,6 +9,7 @@ import { authModule } from './modules/auth/auth.module.js';
 import { catalogModule } from './modules/catalog/catalog.module.js';
 import { sellerModule } from './modules/seller/seller.module.js';
 import { adminModule } from './modules/admin/admin.module.js';
+import { cartModule } from './modules/cart/cart.module.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 
 export function createApp() {
@@ -37,6 +38,7 @@ export function createApp() {
   app.use(env.API_PREFIX, catalogModule);
   app.use(env.API_PREFIX, sellerModule);
   app.use(env.API_PREFIX, adminModule);
+  app.use(env.API_PREFIX, cartModule);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

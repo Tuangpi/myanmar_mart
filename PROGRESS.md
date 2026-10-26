@@ -3,10 +3,10 @@
 ## Current State
 
 - **Current task:** None.
-- **Most recently completed:** T009 — Seller product and inventory management.
-- **Unfinished work:** T010–T020 in `TASKS.md`.
+- **Most recently completed:** T011 — Cart.
+- **Unfinished work:** T012–T020 in `TASKS.md`.
 - **Blockers:** None.
-- **Recommended next task:** T010 — Public seller storefront page.
+- **Recommended next task:** T012 — Checkout and transactional order creation.
 
 ### Verified environment
 
@@ -86,6 +86,23 @@ Checked 2026-10-22:
 - **Checks:** Full `npm test` PASS: API 44/44 and web 10/10. `npm run typecheck` PASS. `npm run build` PASS (Zod annotation warnings only). `npm run lint` PASS with 0 errors and 7 existing warnings. `git diff --check` PASS. No browser-based visual verification.
 - **Known follow-up:** `npm audit` reports 4 high-severity findings involving body-parser, deepmerge-ts, @prisma/config and prisma; no unrelated dependency upgrades were attempted. Older integration suites still use broad fixture cleanup and sequential execution. T010 is next; not started.
 - **Suggested commit:** `feat: add seller product and inventory management`.
+
+### T010 — Public seller storefront page (DONE)
+
+- **Result:** `#/stores/:slug` displays approved store name, optional logo/description, and paginated active products with images, MMK prices, categories, stock states and links to product details. Uses existing store/profile and store-filtered catalog endpoints, avoiding the profile endpoint's 12-product preview limit. Includes English/Burmese loading, empty, unavailable and retry states; aborts stale requests on navigation. Hash parsing tolerates malformed percent encoding.
+- **Files:** `apps/web/src/pages/StorefrontPage.tsx`, its test file, `apps/web/src/App.tsx`, shared English/Burmese locale JSON, and catalog API tests. No dependencies or API response contracts changed.
+- **Checks:** Full `npm test` PASS: API 47/47, web 18/18. New tests cover storefront profile/listing, pagination, stock/image fallbacks, empty states, translations, unavailable stores, retries and hash routing. API tests verify rejected/suspended store visibility and store-filtered pagination. `npm run typecheck` PASS; `npm run build` PASS (existing Zod annotation warnings); `npm run lint` PASS (0 errors, 7 existing warnings); `git diff --check` PASS.
+- **Limitations:** No browser-based visual/mobile verification. Existing dependency-audit findings noted under T009 remain unresolved. T011 is next; not started.
+- **Suggested commit:** `feat: add public seller storefront page`.
+
+### T011 — Cart (DONE)
+
+- **Result:** Authenticated `GET /api/cart`, `POST /api/cart/items`, `PATCH /api/cart/items/:id`, and `DELETE /api/cart/items/:id`. Mutations verify item ownership, validate positive integer quantities, enforce cumulative stock limits and reject unavailable products/stores. Repeated adds merge quantities. Responses use current server-side prices, line subtotals and cart subtotal. Per-user row locking serializes concurrent adds and first-cart creation without a schema migration. Stock is not reserved or decremented.
+- **UI:** `#/cart` with navigation, product/store links, current MMK prices, quantity editing, removal, loading/empty/error/retry states and stale availability warnings. Product detail Add to cart now calls the authenticated API. English/Burmese messages included. Product routes remount on product changes to avoid stale cart feedback.
+- **Files:** New API cart module/service/tests, web cart request helper/tests; updates to API registration, cart/product detail pages, hash routing, layout navigation, shared schemas/types/locales. Existing uncommitted T010 changes preserved. No new dependencies.
+- **Checks:** Full `npm test` PASS: API 53/53, web 26/26, including concurrent first adds, stock caps, cross-user isolation, validation, stale products, mutations, routing, translation and error states. `npm run typecheck` PASS; `npm run build` PASS (existing Zod annotation warnings); `npm run lint` PASS (0 errors, 7 existing warnings); `git diff --check` PASS. Reviewed edited/new implementation and test files.
+- **Limitations:** Requires an existing authenticated cookie; no login screen, guest cart, checkout or browser-based visual verification added. Existing dependency-audit findings remain unresolved. T012 is next; not started.
+- **Suggested commit:** `feat: add authenticated shopping cart`.
 
 ## Notes
 

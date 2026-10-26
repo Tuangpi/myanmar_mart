@@ -116,3 +116,14 @@ export const sellerProductStockSchema = z
   .strict();
 
 export type SellerProductStockInput = z.infer<typeof sellerProductStockSchema>;
+
+// --- Cart schemas (T011) ---
+export const cartQuantitySchema = z.object({
+  quantity: z.number().int().min(1).max(2147483647),
+}).strict();
+
+export const cartAddSchema = cartQuantitySchema.extend({
+  productId: z.string().uuid(),
+});
+
+export const cartItemParamSchema = z.object({ id: z.string().uuid() });

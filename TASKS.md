@@ -73,7 +73,7 @@ All tasks start at `TODO` unless noted. A task is `DONE` only when its expected 
 
 ### T010 — Public seller storefront page
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** Public storefront at the store slug showing store name, logo, description, and its active products.
 - **Completion check:** Visiting a store slug renders its profile and product list.
 - **Dependencies:** T007, T005
@@ -82,7 +82,7 @@ All tasks start at `TODO` unless noted. A task is `DONE` only when its expected 
 
 ### T011 — Cart
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** `GET /api/cart`, `POST /api/cart/items`, `PATCH /api/cart/items/:id`, `DELETE /api/cart/items/:id`, plus the cart UI with quantity edits and removal; cart scoped to the signed-in user.
 - **Completion check:** API tests cover add, update quantity, remove, and the quantity cap against available stock.
 - **Dependencies:** T003, T005

@@ -6,6 +6,27 @@ export interface ApiError {
   details?: unknown;
 }
 
+export interface CartItemResponse {
+  id: string;
+  productId: string;
+  name: string;
+  slug: string;
+  thumbnailUrl: string | null;
+  storeName: string;
+  storeSlug: string;
+  quantity: number;
+  stock: number;
+  available: boolean;
+  unitPrice: number;
+  subtotal: number;
+}
+
+export interface CartResponse {
+  items: CartItemResponse[];
+  itemCount: number;
+  subtotal: number;
+}
+
 export interface ApiSuccess<T> {
   success: true;
   data: T;

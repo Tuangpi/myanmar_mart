@@ -3,6 +3,7 @@ import { useI18n } from '@myanmart/shared';
 import type { ProductDetail } from '@myanmart/shared';
 import { I18nLayout } from '../layouts/I18nLayout';
 import { formatMMK } from '../lib/format';
+import { cartErrorKey, requestCart } from '../lib/cart';
 
 interface ProductDetailPageProps {
   id?: string;
@@ -42,6 +43,25 @@ function ProductDetailContent(props: ProductDetailPageProps) {
   const [product, setProduct] = useState<ProductDetail | null>(props.product ?? null);
   const [loading, setLoading] = useState(!props.product);
   const [error, setError] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [cartMessage, setCartMessage] = useState('');
+  const [cartFailed, setCartFailed] = useState(false);
+
+  async function addToCart() {
+    if (!product) return;
+    setAdding(true);
+    setCartMessage('');
+    setCartFailed(false);
+    try {
+      await requestCart('/api/cart/items', 'POST', { productId: product.id, quantity: 1 });
+      setCartMessage('cart.added');
+    } catch (err) {
+      setCartFailed(true);
+      setCartMessage(cartErrorKey(err));
+    } finally {
+      setAdding(false);
+    }
+  }
 
   useEffect(() => {
     if (props.product) {
@@ -143,7 +163,7 @@ function ProductDetailContent(props: ProductDetailPageProps) {
             </div>
 
             {product.stock > 0 ? (
-              <button type="button" className="bg-primary text-white px-4 py-2 rounded text-sm font-medium">
+              <button type="button" disabled={adding} onClick={() => void addToCart()} className="bg-primary text-white px-4 py-2 rounded text-sm font-medium disabled:opacity-50">
                 {t('product.addToCart')}
               </button>
             ) : (
@@ -155,6 +175,8 @@ function ProductDetailContent(props: ProductDetailPageProps) {
                 {t('product.outOfStock')}
               </button>
             )}
+
+            {cartMessage && <p role={cartFailed ? 'alert' : 'status'} className="mt-3">{t(cartMessage)}</p>}
 
             <div className="mt-6">
               <h3 className="font-semibold text-gray-900 mb-2">{t('product.description')}</h3>

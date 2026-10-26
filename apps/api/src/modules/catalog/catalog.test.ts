@@ -295,6 +295,28 @@ describe('public catalog API', () => {
   });
 
   describe('GET /api/stores/:slug', () => {
+    it.each(['REJECTED', 'SUSPENDED'] as const)('hides %s stores and their products', async (status) => {
+      await prisma.store.update({ where: { slug: 'pending-store' }, data: { status } });
+      try {
+        expect((await request(app).get('/api/stores/pending-store')).status).toBe(404);
+        const products = await request(app).get('/api/products?storeSlug=pending-store');
+        expect(products.status).toBe(200);
+        expect(products.body.data.total).toBe(0);
+      } finally {
+        await prisma.store.update({ where: { slug: 'pending-store' }, data: { status: 'PENDING' } });
+      }
+    });
+
+    it('filters and paginates active products for a storefront', async () => {
+      const first = await request(app).get('/api/products?storeSlug=approved-store&pageSize=2&page=1');
+      const second = await request(app).get('/api/products?storeSlug=approved-store&pageSize=2&page=2');
+      expect(first.status).toBe(200);
+      expect(first.body.data.total).toBe(3);
+      expect(first.body.data.items).toHaveLength(2);
+      expect(second.body.data.items).toHaveLength(1);
+      expect([...first.body.data.items, ...second.body.data.items].every((p: { storeSlug: string }) => p.storeSlug === 'approved-store')).toBe(true);
+    });
+
     it('returns an approved store with its active products', async () => {
       const res = await request(app).get('/api/stores/approved-store');
 

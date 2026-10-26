@@ -60,6 +60,14 @@
     "noReviews": "No reviews yet."
   },
   "cart": {
+    "added": "Added to cart.",
+    "signInRequired": "Please sign in to use your cart.",
+    "stockChanged": "Stock has changed. Please check the available quantity and try again.",
+    "unavailable": "This product is no longer available. Please remove it from your cart.",
+    "update": "Update quantity",
+    "retry": "Retry",
+    "continueShopping": "Continue shopping",
+    "priceNotice": "Prices and stock can change. Cart items do not reserve stock. Delivery fees are calculated at checkout.",
     "title": "Cart",
     "subtotal": "Subtotal",
     "shipping": "Shipping",
@@ -189,6 +197,14 @@
     "showing": "{count} of {total} products",
     "noImage": "No image",
     "inStock": "{count} in stock"
+  },
+  "storefront": {
+    "products": "Store products",
+    "empty": "This store has no published products yet.",
+    "notFound": "Store not found or unavailable.",
+    "failed": "Could not load this store. Please try again.",
+    "retry": "Try again",
+    "pagination": "Store product pages"
   },
   "sellerProducts": {
     "title": "Seller products",
