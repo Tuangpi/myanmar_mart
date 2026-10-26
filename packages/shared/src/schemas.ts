@@ -66,4 +66,53 @@ export const adminSellerStatusSchema = z.object({
   status: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'SUSPENDED']),
 });
 
+// --- Seller product management schemas (T009) ---
+
 export type AdminSellerStatusInput = z.infer<typeof adminSellerStatusSchema>;
+
+export const productStatuses = ['DRAFT', 'ACTIVE', 'ARCHIVED'] as const;
+export type ProductStatusValue = (typeof productStatuses)[number];
+
+export const sellerProductCreateSchema = z
+  .object({
+    name: z.string().trim().min(2).max(200),
+    slug: z
+      .string()
+      .trim()
+      .min(2)
+      .max(60)
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+      .optional(),
+    description: z.string().trim().max(5000).optional().nullable(),
+    price: z.number().int().min(1).max(2147483647),
+    stock: z.number().int().min(0).max(2147483647).default(0),
+    categoryId: z.string().uuid().optional().nullable(),
+    status: z.enum(productStatuses).default('DRAFT'),
+  })
+  .strict();
+
+export type SellerProductCreateInput = z.infer<typeof sellerProductCreateSchema>;
+
+export const sellerProductUpdateSchema = sellerProductCreateSchema
+  .extend({
+    stock: z.number().int().min(0).max(2147483647),
+    status: z.enum(productStatuses),
+  })
+  .partial()
+  .refine((value) => Object.keys(value).length > 0, 'Provide at least one field');
+
+export type SellerProductUpdateInput = z.infer<typeof sellerProductUpdateSchema>;
+
+export const sellerProductIdParamSchema = z.object({
+  id: z.string().uuid(),
+});
+
+export type SellerProductIdParam = z.infer<typeof sellerProductIdParamSchema>;
+
+export const sellerProductStockSchema = z
+  .object({
+    stock: z.number().int().min(0).max(2147483647),
+  })
+  .strict();
+
+export type SellerProductStockInput = z.infer<typeof sellerProductStockSchema>;

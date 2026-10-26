@@ -3,10 +3,10 @@
 ## Current State
 
 - **Current task:** None.
-- **Most recently completed:** T008 — Seller application and admin approval.
-- **Unfinished work:** T009–T020 in `TASKS.md`.
+- **Most recently completed:** T009 — Seller product and inventory management.
+- **Unfinished work:** T010–T020 in `TASKS.md`.
 - **Blockers:** None.
-- **Recommended next task:** T009 — Seller product and inventory management.
+- **Recommended next task:** T010 — Public seller storefront page.
 
 ### Verified environment
 
@@ -76,6 +76,16 @@ Checked 2026-10-22:
 - **Files changed:** `packages/shared/src/schemas.ts`; `apps/api/src/modules/seller/*`; `apps/api/src/modules/admin/*`; `apps/api/src/app.ts`; `apps/api/src/modules/seller/seller.test.ts`; `apps/api/vitest.config.ts`.
 - **Checks run:** API tests 36/36 PASS (seller 9, catalog 17, auth 8, app 2) with `fileParallelism: false`; typecheck PASS (API + web); lint PASS on changed files; build PASS (shared + API).
 - **Follow-up:** T009 will implement seller product CRUD and enforce the approved-store gate on publish. T010 will make the store link resolve.
+
+### T009 — Seller product and inventory management (DONE)
+
+- **Result:** Paginated seller list, create/read/edit, stock updates, publishing and archiving; DELETE archives rather than removing records. All seller product routes require current SELLER role and verify ownership. Publishing checks approval under a store-row lock. Partial updates preserve omitted stock/status. Generated slugs support Burmese names via a UUID fallback.
+- **UI:** `#/seller/products` provides create/edit, image upload, publish/archive, stock fields, pagination, approval status, error states and English/Burmese labels. Requires an existing authenticated seller cookie; no login screen was added in this task.
+- **Storage:** Multer is the new multipart dependency. Single-image uploads accept PNG/JPEG/WebP with configured size limits and MIME/signature checks, UUID filenames, ownership checks before parsing, and filesystem cleanup on database failure. Public image delivery checks product/store visibility and disables caching. Local storage is behind an interface; full image decoding, malware scanning and production object storage remain outside this task.
+- **Files:** API seller product controller/service/tests and image storage; auth middleware now loads current account role/status; shared schemas/locales; seller page/tests, hash routing and navigation; API dependency manifest/lockfile.
+- **Checks:** Full `npm test` PASS: API 44/44 and web 10/10. `npm run typecheck` PASS. `npm run build` PASS (Zod annotation warnings only). `npm run lint` PASS with 0 errors and 7 existing warnings. `git diff --check` PASS. No browser-based visual verification.
+- **Known follow-up:** `npm audit` reports 4 high-severity findings involving body-parser, deepmerge-ts, @prisma/config and prisma; no unrelated dependency upgrades were attempted. Older integration suites still use broad fixture cleanup and sequential execution. T010 is next; not started.
+- **Suggested commit:** `feat: add seller product and inventory management`.
 
 ## Notes
 

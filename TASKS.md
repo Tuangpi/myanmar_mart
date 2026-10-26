@@ -66,7 +66,7 @@ All tasks start at `TODO` unless noted. A task is `DONE` only when its expected 
 
 ### T009 — Seller product and inventory management
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** Seller product list, create, edit, publish, and archive; stock management; product image upload with type and size validation; seller-only access control on every product.
 - **Completion check:** A seller can create and publish a product end to end, and API tests confirm one seller cannot read or modify another seller's product.
 - **Dependencies:** T008, T005

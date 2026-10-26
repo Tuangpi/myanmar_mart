@@ -1,10 +1,10 @@
+import { getPrisma } from '../lib/prisma.js';
 import type { NextFunction, Request, Response } from 'express';
 import { verifyToken } from '../lib/jwt.js';
 import type { AuthUser, UserRole } from '@myanmart/shared';
 import { AppError } from '../lib/errors.js';
 
 declare module 'express' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface Request {
     user?: AuthUser;
   }
@@ -18,26 +18,38 @@ function extractToken(req: Request): string | undefined {
   return req.cookies?.token;
 }
 
-export function requireAuth(req: Request, _res: Response, next: NextFunction): void {
+export async function requireAuth(req: Request, _res: Response, next: NextFunction): Promise<void> {
   const token = extractToken(req);
   if (!token) {
     next(AppError.unauthorized());
     return;
   }
+  let id: string;
   try {
-    const payload = verifyToken(token);
+    id = verifyToken(token).id;
+  } catch {
+    next(AppError.unauthorized('Invalid or expired token'));
+    return;
+  }
+  try {
+    const user = await getPrisma().user.findUnique({ where: { id } });
+    if (!user || user.status !== 'ACTIVE') {
+      next(AppError.unauthorized('Invalid or expired token'));
+      return;
+    }
+    // Read current roles so approval, demotion and suspension apply to existing tokens.
     req.user = {
-      id: payload.id,
-      name: '',
-      email: '',
-      phone: null,
-      role: payload.role,
-      status: '',
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      status: user.status,
       storeId: null,
     };
     next();
-  } catch {
-    next(AppError.unauthorized('Invalid or expired token'));
+  } catch (err) {
+    next(err);
   }
 }
 
@@ -54,4 +66,3 @@ export function requireRole(...roles: UserRole[]) {
     next();
   };
 }
-
