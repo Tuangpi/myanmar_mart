@@ -3,10 +3,10 @@
 ## Current State
 
 - **Current task:** None.
-- **Most recently completed:** T006 — Buyer catalog browsing UI.
-- **Unfinished work:** T007–T020 in `TASKS.md`.
+- **Most recently completed:** T008 — Seller application and admin approval.
+- **Unfinished work:** T009–T020 in `TASKS.md`.
 - **Blockers:** None.
-- **Recommended next task:** T007 — Product detail page.
+- **Recommended next task:** T009 — Seller product and inventory management.
 
 ### Verified environment
 
@@ -60,8 +60,22 @@ Checked 2026-10-22:
 
 - **Result:** Catalog page now loads categories and products from the public catalog API with search (debounced), category filter, sort field/order, and server-side pagination. Product cards show thumbnail, name, price (MMK), store, category, and stock state. Fixed the i18n provider so translations load on first render and the layout no longer calls hooks outside the provider.
 - **Files changed:** `apps/web/src/pages/CatalogPage.tsx`; `apps/web/src/App.tsx`; `apps/web/src/layouts/I18nLayout.tsx`; `packages/shared/src/i18n/context.tsx`; `packages/shared/src/i18n/en.json`; `packages/shared/src/i18n/my.json`; `packages/shared/src/i18n/test.mjs`.
-- **Checks run:** `npm test --workspace=@myanmart/web` — 1/1 PASS; `npm run typecheck` PASS; `npm run build` PASS (shared, api, web). `npm run lint` — 0 errors, 7 warnings.
-- **Follow-up:** Product detail page (T007) can link from catalog cards.
+- **Checks run:** Resumption verification: web tests 5/5 PASS, including API-backed rendering, category filtering, pagination reset, debounced search, sorting, empty/error states, and persisted language switching (`apps/web/src/pages/CatalogPage.test.tsx`). `npm run typecheck` PASS; `npm run build` PASS across shared, API, and web; `npm run lint` reports 0 errors and 7 existing warnings. `git diff --check` PASS. Browser/live-API UI verification was not performed.
+- **Follow-up:** Default parallel API test run failed 8/27 tests because auth and catalog fixtures delete shared database rows. Running `npm test --workspace=@myanmart/api -- --no-file-parallelism` passes 27/27. Test database isolation remains follow-up work; no API tests or configuration changed here. Product detail page (T007) can link from catalog cards. T007 edits appeared during resumption and were left untouched.
+
+### T007 — Product detail page (DONE)
+
+- **Result:** Product detail page now renders inside `I18nLayout` via an inner content component (fixing `useI18n` provider error). Shows images, price, stock, description, category, and seller link to `#/stores/:slug`; displays out-of-stock state when stock is zero.
+- **Files changed:** `apps/web/src/pages/ProductDetailPage.tsx`; `apps/web/src/pages/ProductDetailPage.smoke.test.tsx`.
+- **Checks run:** web tests 7/7 PASS; typecheck PASS; lint PASS (0 errors, 8 warnings); build PASS.
+- **Follow-up:** Seller storefront page itself (T010) is not implemented yet, so the store link targets a future route.
+
+### T008 — Seller application and admin approval (DONE)
+
+- **Result:** Seller store application and admin approval workflow implemented. `POST /api/seller/apply` creates a PENDING store for an authenticated user and promotes them to SELLER; `GET /api/seller/store` surfaces store status to the applicant; `GET /api/admin/sellers` and `PATCH /api/admin/sellers/:id/status` let admins approve/reject/suspend stores (id may be store or owner id). Store status gates public catalog visibility and is intended to gate product publishing in T009.
+- **Files changed:** `packages/shared/src/schemas.ts`; `apps/api/src/modules/seller/*`; `apps/api/src/modules/admin/*`; `apps/api/src/app.ts`; `apps/api/src/modules/seller/seller.test.ts`; `apps/api/vitest.config.ts`.
+- **Checks run:** API tests 36/36 PASS (seller 9, catalog 17, auth 8, app 2) with `fileParallelism: false`; typecheck PASS (API + web); lint PASS on changed files; build PASS (shared + API).
+- **Follow-up:** T009 will implement seller product CRUD and enforce the approved-store gate on publish. T010 will make the store link resolve.
 
 ## Notes
 

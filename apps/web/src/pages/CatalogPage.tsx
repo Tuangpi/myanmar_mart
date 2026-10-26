@@ -210,6 +210,9 @@ function CatalogContent() {
                     <span className="text-red-600">{t('product.outOfStock')}</span>
                   )}
                 </p>
+                <a href={`#/products/${p.id}`} className="mt-2 inline-block text-sm text-primary hover:underline">
+                  {t('common.view')}
+                </a>
               </article>
             ))}
           </div>

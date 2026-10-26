@@ -50,3 +50,20 @@ export const storeSlugParamSchema = z.object({
 });
 
 export type StoreSlugParam = z.infer<typeof storeSlugParamSchema>;
+
+// --- Seller application schemas (T008) ---
+
+export const sellerApplySchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  slug: z.string().trim().min(2).max(60),
+  description: z.string().trim().max(1000).optional().nullable(),
+  logoUrl: z.string().trim().url().max(500).optional().nullable(),
+});
+
+export type SellerApplyInput = z.infer<typeof sellerApplySchema>;
+
+export const adminSellerStatusSchema = z.object({
+  status: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'SUSPENDED']),
+});
+
+export type AdminSellerStatusInput = z.infer<typeof adminSellerStatusSchema>;

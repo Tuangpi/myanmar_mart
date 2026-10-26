@@ -52,14 +52,14 @@ All tasks start at `TODO` unless noted. A task is `DONE` only when its expected 
 
 ### T007 — Product detail page
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** Product page showing images, price, stock, description, category, and seller link; displays an out-of-stock state when stock is zero.
 - **Completion check:** A known product renders all fields from the API and links to the seller's storefront.
 - **Dependencies:** T006
 
 ### T008 — Seller application and admin approval
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** Seller submits store information; admin approves, suspends, or rejects; store status gates product publishing; rejected and suspended states are surfaced to the applicant.
 - **Completion check:** API tests confirm a non-approved seller cannot publish, and that admin approval is required before the store becomes active.
 - **Dependencies:** T003
