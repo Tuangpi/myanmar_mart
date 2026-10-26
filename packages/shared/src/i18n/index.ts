@@ -191,4 +191,4 @@ export function capitalizeFirst(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-export { I18nProvider, useI18n, useLocale } from './context.tsx';
+export { I18nProvider, useI18n, useLocale } from './context.js';

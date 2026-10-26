@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole, CategoryStatus, StoreStatus } from '@prisma/client';
+import { PrismaClient, UserRole, CategoryStatus, StoreStatus, ProductStatus } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -64,6 +64,85 @@ async function main() {
       slug: 'demo-store',
       description: 'A demo seller storefront for MyanMart.',
       status: StoreStatus.APPROVED,
+    },
+  });
+
+  // Demo products
+  const electronics = categories.find((c) => c.slug === 'electronics') ?? categories[0];
+  const fashion = categories.find((c) => c.slug === 'fashion') ?? categories[1];
+
+  await prisma.product.upsert({
+    where: { slug: 'wireless-headphones' },
+    update: {},
+    create: {
+      storeId: store.id,
+      categoryId: electronics.id,
+      name: 'Wireless Headphones',
+      slug: 'wireless-headphones',
+      description: 'High-quality wireless headphones with 30-hour battery life and active noise cancellation.',
+      price: 89000,
+      stock: 50,
+      status: ProductStatus.ACTIVE,
+      images: {
+        create: [
+          { imageUrl: 'https://placehold.co/600x600?text=Headphones+front', sortOrder: 0 },
+          { imageUrl: 'https://placehold.co/600x600?text=Headphones+side', sortOrder: 1 },
+        ],
+      },
+    },
+  });
+
+  await prisma.product.upsert({
+    where: { slug: 'premium-coffee-beans' },
+    update: {},
+    create: {
+      storeId: store.id,
+      categoryId: categories.find((c) => c.slug === 'food-beverages')?.id ?? categories[3].id,
+      name: 'Premium Coffee Beans',
+      slug: 'premium-coffee-beans',
+      description: 'Single-origin Arabica coffee beans, medium roast, 500g bag.',
+      price: 12500,
+      stock: 200,
+      status: ProductStatus.ACTIVE,
+      images: {
+        create: [{ imageUrl: 'https://placehold.co/600x600?text=Coffee+bag', sortOrder: 0 }],
+      },
+    },
+  });
+
+  await prisma.product.upsert({
+    where: { slug: 'ss02-draft' },
+    update: {},
+    create: {
+      storeId: store.id,
+      categoryId: fashion.id,
+      name: 'Draft Sunglasses',
+      slug: 'ss02-draft',
+      description: 'Stylish sunglasses (draft — not yet published).',
+      price: 25000,
+      stock: 10,
+      status: ProductStatus.DRAFT,
+      images: {
+        create: [{ imageUrl: 'https://placehold.co/600x600?text=Draft', sortOrder: 0 }],
+      },
+    },
+  });
+
+  await prisma.product.upsert({
+    where: { slug: 'organic-coconut-oil' },
+    update: {},
+    create: {
+      storeId: store.id,
+      categoryId: categories.find((c) => c.slug === 'home-living')?.id ?? categories[2].id,
+      name: 'Organic Coconut Oil',
+      slug: 'organic-coconut-oil',
+      description: 'Cold-pressed organic coconut oil, 1L bottle. Perfect for cooking and skincare.',
+      price: 8500,
+      stock: 0,
+      status: ProductStatus.ACTIVE,
+      images: {
+        create: [{ imageUrl: 'https://placehold.co/600x600?text=Coconut+Oil', sortOrder: 0 }],
+      },
     },
   });
 

@@ -38,7 +38,7 @@ All tasks start at `TODO` unless noted. A task is `DONE` only when its expected 
 
 ### T005 — Public catalog API
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** `GET /api/categories`, `GET /api/products` with search, filter, sort, and pagination, `GET /api/products/:id`, and `GET /api/stores/:slug`; Zod validation; server-side pagination.
 - **Completion check:** API tests cover pagination boundaries, an unknown product id returning 404, and a search filter narrowing results.
 - **Dependencies:** T002

@@ -1,4 +1,4 @@
-import type { UserRole } from './constants.js';
+import type { UserRole, ProductStatus, StoreStatus } from './constants.js';
 
 export interface ApiError {
   code: string;
@@ -40,4 +40,76 @@ export interface HealthResponse {
   status: 'ok';
   service: string;
   timestamp: string;
+}
+
+// --- Catalog public API types (T005) ---
+
+export interface CategoryResponse {
+  id: string;
+  name: string;
+  slug: string;
+  parentId: string | null;
+  productCount: number;
+}
+
+export interface ProductImageResponse {
+  id: string;
+  imageUrl: string;
+  sortOrder: number;
+}
+
+export interface ProductSummary {
+  id: string;
+  slug: string;
+  name: string;
+  price: number;
+  stock: number;
+  thumbnailUrl: string | null;
+  storeName: string;
+  storeSlug: string;
+  categoryName: string | null;
+}
+
+export interface ProductDetail {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  price: number;
+  stock: number;
+  status: ProductStatus;
+  store: {
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    logoUrl: string | null;
+    status: StoreStatus;
+  };
+  category: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
+  images: ProductImageResponse[];
+}
+
+export interface StoreProductSummary {
+  id: string;
+  slug: string;
+  name: string;
+  price: number;
+  stock: number;
+  thumbnailUrl: string | null;
+  categoryName: string | null;
+}
+
+export interface StoreResponse {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  logoUrl: string | null;
+  status: StoreStatus;
+  products: StoreProductSummary[];
 }

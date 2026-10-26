@@ -2,11 +2,11 @@
 
 ## Current State
 
-- **Current task:** None
-- **Most recently completed:** T002 — Database schema, migrations, and seed.
-- **Unfinished work:** T003–T020 all `TODO` in `TASKS.md`. Database schema, migrations, and seed are complete and verified. No auth or feature code yet.
+- **Current task:** None.
+- **Most recently completed:** T005 — Public catalog API.
+- **Unfinished work:** T006–T020 in `TASKS.md`.
 - **Blockers:** None.
-- **Recommended next task:** T003 — Authentication and role-based access control.
+- **Recommended next task:** T006 — Buyer catalog browsing UI.
 
 ### Verified environment
 
@@ -48,6 +48,13 @@ Checked 2026-10-22:
 - **Expected result:** Responsive mobile-first layout with Tailwind CSS and shadcn-style UI primitives; Burmese (`my`) and English (`en`) language support with a language switcher and persisted choice; global UI primitives in `packages/shared` where reusable; English + Burmese visible UI text.
 - **Completion check:** App renders at mobile and desktop widths; switching language updates visible UI text and the choice survives a page reload.
 - **Dependencies:** T001
+
+### T005 — Public catalog API (DONE)
+
+- **Result:** Public catalog API implemented in `apps/api/src/modules/catalog/`: `GET /api/categories`, `GET /api/products` (search, filter by category/store, sort, pagination), `GET /api/products/:id` (UUID or slug), `GET /api/stores/:slug`. Zod validation via shared schemas; server-side pagination; only ACTIVE products in APPROVED stores are public.
+- **Files changed:** `apps/api/src/modules/catalog/{catalog.controller.ts,catalog.routes.ts,catalog.module.ts,catalog.test.ts}`; `packages/shared/src/{schemas.ts,types.ts}`; `apps/api/src/app.ts`.
+- **Checks run:** `npm test --workspace=@myanmart/api` — 27/27 PASS (catalog 17, auth 8, app 2). `npm run typecheck` PASS. `npm run build` PASS. (Lint has pre-existing warnings plus one error in `packages/shared/src/i18n/test.mjs` unrelated to T005.)
+- **Follow-up:** None.
 
 ## Notes
 
