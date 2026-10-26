@@ -48,6 +48,7 @@ function CheckoutContent() {
     return (
       <div className="max-w-3xl mx-auto space-y-4">
         <h2 className="text-2xl font-bold">{t('checkoutPage.success')}</h2>
+        <a href={`#/orders/${encodeURIComponent(order.id)}`} className="text-primary underline">{t('ordersPage.details')}</a>
         <p>
           {t('checkoutPage.orderNumber')}: {order.orderNumber}
         </p>

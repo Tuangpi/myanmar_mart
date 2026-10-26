@@ -38,6 +38,7 @@ const quote: CheckoutQuote = {
   total: 5500,
 };
 const order: OrderResponse = {
+  canCancel: true,
   id: 'order',
   orderNumber: 'MM-TEST',
   address,

@@ -3,10 +3,10 @@
 ## Current State
 
 - **Current task:** None.
-- **Most recently completed:** T012 — Checkout and transactional order creation.
-- **Unfinished work:** T013–T020 in `TASKS.md`.
+- **Most recently completed:** T013 — Buyer order history and order details (Phase 3 complete).
+- **Unfinished work:** T014–T020 in `TASKS.md`.
 - **Blockers:** None.
-- **Recommended next task:** T013 — Buyer order history and order details.
+- **Recommended next task:** T014 — Payment methods and manual payment submission.
 
 ### Verified environment
 
@@ -113,6 +113,16 @@ Checked 2026-10-22:
 - **Checks:** Full `npm test` PASS: API 61/61, web 35/35. Tests cover multi-seller totals, fee, ignored client prices, snapshots, ownership/pagination, empty/unavailable carts, insufficient-stock rollback, concurrent last-unit purchases, duplicate submits, prepaid states, MMK overflow, quote routing, form submission, grouped confirmation, errors/retry, translations and disabled submission. `npm run typecheck` PASS; `npm run build` PASS (existing Zod annotation warnings); `npm run lint` PASS (0 errors, 7 existing warnings); `git diff --check` PASS. Reviewed implementation and test files.
 - **Limitations:** No browser visual verification; no saved-address management, durable idempotency keys, payment submission/verification, order history UI or per-seller fulfillment statuses added. Pending prepaid orders consume inventory; expiry/release is not implemented. Existing dependency-audit findings remain unresolved. T013 is next; not started.
 - **Suggested commit:** `feat: add transactional checkout and order creation`.
+
+### T013 — Buyer order history and order details (DONE)
+
+- **Result:** `#/orders` shows paginated buyer history with seller-grouped item snapshots, prices, totals, payment method/status and current order status. `#/orders/:id` adds delivery/contact details and notes. Navigation and checkout confirmation link to orders. English/Burmese states cover loading, empty, sign-in, missing orders, retry and cancellation. Aborted reads do not overwrite a newly navigated order.
+- **Cancellation:** Owner-only `POST /api/orders/:id/cancel` independently rechecks eligibility under an order-row lock. Unpaid COD may cancel while CONFIRMED; manual-payment orders may cancel while PENDING_PAYMENT. Submitted/verified/refunded payments or later fulfillment states block cancellation. UI uses server-calculated `canCancel`, asks for confirmation and guards repeated submissions. Errors refresh the current order without silently repeating cancellation.
+- **Inventory/history:** Whole-order cancellation restores existing product stock, changes status and records one history row atomically. Competing cancellations restore stock once. Deleted-product snapshots remain usable; overflow aborts all stock/status/history changes. Future payment/fulfillment writers must lock the same order row before state changes. Policy documented in project and API docs.
+- **Files:** Orders API service/routes/integration tests; shared order response and English/Burmese locales; orders page/new UI tests, hash routing, layout navigation and checkout confirmation/tests. No dependencies or database migrations added.
+- **Checks:** Full `npm test` PASS: API 68/68, web 44/44. Includes cancellation ownership/eligibility, multi-seller stock restoration, concurrent cancellation, single history row, full rollback after partial restoration, deleted products, history/detail routing, pagination, confirmation, translations, uncertain response recovery and stale navigation. `npm run typecheck` PASS; `npm run build` PASS (existing Zod annotation warnings); `npm run lint` PASS (0 errors, 7 existing warnings); `git diff --check` PASS. Reviewed edited/new code and tests.
+- **Limitations:** Requires an existing authenticated session. No visual/browser verification, refunds, partial cancellation or automatic pending-payment expiry. Full payment/order transition map and verification remain T015; per-seller fulfillment remains T016. Existing dependency-audit findings remain unresolved. Phase 3 complete; T014 is next, not started.
+- **Suggested commit:** `feat: add buyer order history and cancellation`.
 
 ## Notes
 

@@ -96,7 +96,7 @@ All tasks start at `TODO` unless noted. A task is `DONE` only when its expected 
 
 ### T013 — Buyer order history and order details
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** Order list and order detail pages grouped by seller, showing items, totals, payment method, and current status; a buyer can cancel only eligible orders via `POST /api/orders/:id/cancel`.
 - **Completion check:** A buyer sees their own orders only and can cancel one in a cancellable state.
 - **Dependencies:** T012

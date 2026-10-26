@@ -44,6 +44,7 @@ export interface OrderItemResponse {
 }
 
 export interface OrderResponse {
+  canCancel: boolean;
   id: string;
   orderNumber: string;
   address: DeliveryAddress;

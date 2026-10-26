@@ -73,6 +73,127 @@ async function add(productId: string, quantity = 1, user = 0) {
 }
 
 describe('checkout and orders', () => {
+  async function placed(paymentMethod = 'COD') {
+    const p = await product();
+    await add(p.id, 2);
+    const response = await api('post', '/api/orders').send({ address, paymentMethod });
+    expect(response.status).toBe(201);
+    return { p, order: response.body.data };
+  }
+
+  it('cancels an eligible order, restores stock once and records history', async () => {
+    const { p, order } = await placed();
+    expect(order.canCancel).toBe(true);
+    const res = await api('post', `/api/orders/${order.id}/cancel`).send({});
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({ status: 'CANCELLED', canCancel: false });
+    expect((await db.product.findUniqueOrThrow({ where: { id: p.id } })).stock).toBe(5);
+    expect((await api('post', `/api/orders/${order.id}/cancel`).send({})).status).toBe(409);
+    expect((await db.product.findUniqueOrThrow({ where: { id: p.id } })).stock).toBe(5);
+    const history = await db.orderStatusHistory.findMany({
+      where: { orderId: order.id, newStatus: 'CANCELLED' },
+    });
+    expect(history).toHaveLength(1);
+    expect(history[0]).toMatchObject({ oldStatus: 'CONFIRMED', changedBy: users[0] });
+  });
+
+  it('requires authentication and ownership for cancellation', async () => {
+    const { p, order } = await placed();
+    expect((await request(app).post(`/api/orders/${order.id}/cancel`)).status).toBe(401);
+    expect((await api('post', `/api/orders/${order.id}/cancel`, 1).send({})).status).toBe(404);
+    expect((await api('post', `/api/orders/${randomUUID()}/cancel`).send({})).status).toBe(404);
+    expect((await api('post', '/api/orders/invalid/cancel').send({})).status).toBe(422);
+    expect((await db.product.findUniqueOrThrow({ where: { id: p.id } })).stock).toBe(3);
+  });
+
+  it('allows unpaid prepaid cancellation but blocks later statuses and payment attempts', async () => {
+    const { order } = await placed('KBZPAY');
+    expect((await api('post', `/api/orders/${order.id}/cancel`).send({})).status).toBe(200);
+    const { p, order: blocked } = await placed();
+    for (const status of [
+      'PAYMENT_SUBMITTED',
+      'PROCESSING',
+      'SHIPPED',
+      'DELIVERED',
+      'CANCELLED',
+      'REFUNDED',
+    ] as const) {
+      await db.order.update({ where: { id: blocked.id }, data: { status } });
+      expect((await api('get', `/api/orders/${blocked.id}`)).body.data.canCancel).toBe(false);
+      expect((await api('post', `/api/orders/${blocked.id}/cancel`).send({})).status).toBe(409);
+    }
+    await db.order.update({
+      where: { id: blocked.id },
+      data: { status: 'CONFIRMED', paymentStatus: 'VERIFIED' },
+    });
+    expect((await api('post', `/api/orders/${blocked.id}/cancel`).send({})).status).toBe(409);
+    await db.order.update({
+      where: { id: blocked.id },
+      data: {
+        paymentStatus: 'PENDING',
+        payments: { create: { method: 'COD', amount: blocked.total, status: 'SUBMITTED' } },
+      },
+    });
+    expect((await api('post', `/api/orders/${blocked.id}/cancel`).send({})).status).toBe(409);
+    expect((await db.product.findUniqueOrThrow({ where: { id: p.id } })).stock).toBe(3);
+  });
+
+  it('serializes competing cancellations and restores multi-seller inventory exactly once', async () => {
+    const first = await product();
+    const second = await product(1);
+    await add(first.id, 2);
+    await add(second.id, 1);
+    const created = await api('post', '/api/orders').send(input);
+    const id = created.body.data.id;
+    const results = await Promise.all([
+      api('post', `/api/orders/${id}/cancel`).send({}),
+      api('post', `/api/orders/${id}/cancel`).send({}),
+    ]);
+    expect(results.map((res) => res.status).sort()).toEqual([200, 409]);
+    for (const p of [first, second])
+      expect((await db.product.findUniqueOrThrow({ where: { id: p.id } })).stock).toBe(5);
+    expect(
+      await db.orderStatusHistory.count({ where: { orderId: id, newStatus: 'CANCELLED' } }),
+    ).toBe(1);
+  });
+
+  it('rolls back cancellation if restoring inventory would overflow', async () => {
+    const { p, order } = await placed();
+    await db.product.update({ where: { id: p.id }, data: { stock: 2147483647 } });
+    expect((await api('post', `/api/orders/${order.id}/cancel`).send({})).status).toBe(409);
+    expect((await db.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe(
+      'CONFIRMED',
+    );
+    expect(
+      await db.orderStatusHistory.count({ where: { orderId: order.id, newStatus: 'CANCELLED' } }),
+    ).toBe(0);
+  });
+
+  it('can cancel orders retaining snapshots of deleted products', async () => {
+    const { p, order } = await placed();
+    await db.product.delete({ where: { id: p.id } });
+    const result = await api('post', `/api/orders/${order.id}/cancel`).send({});
+    expect(result.status).toBe(200);
+    expect(result.body.data.sellerGroups[0].items[0]).toMatchObject({
+      productId: null,
+      productName: 'Tea',
+    });
+  });
+
+  it('rolls back earlier stock restorations when a later product cannot be restored', async () => {
+    const products = [await product(), await product(1)].sort((a, b) => a.id.localeCompare(b.id));
+    for (const p of products) await add(p.id);
+    const created = await api('post', '/api/orders').send(input);
+    const id = created.body.data.id;
+    await db.product.update({ where: { id: products[1]!.id }, data: { stock: 2147483647 } });
+    expect((await api('post', `/api/orders/${id}/cancel`).send({})).status).toBe(409);
+    expect((await db.product.findUniqueOrThrow({ where: { id: products[0]!.id } })).stock).toBe(4);
+    expect((await db.order.findUniqueOrThrow({ where: { id } })).status).toBe('CONFIRMED');
+    expect(
+      await db.orderStatusHistory.count({ where: { orderId: id, newStatus: 'CANCELLED' } }),
+    ).toBe(0);
+  });
+
   it('requires authentication and validates address, payment and identifiers', async () => {
     for (const path of ['/api/checkout', '/api/orders', `/api/orders/${randomUUID()}`])
       expect((await request(app).get(path)).status).toBe(401);

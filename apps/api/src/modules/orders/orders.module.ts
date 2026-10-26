@@ -2,7 +2,7 @@ import { Router, type Request, type Response } from 'express';
 import { checkoutSchema, orderIdParamSchema, paginationQuerySchema } from '@myanmart/shared';
 import { requireAuth } from '../../middleware/auth.js';
 import { sendSuccess } from '../../lib/errors.js';
-import { checkoutQuote, createOrder, getOrder, listOrders } from './orders.service.js';
+import { cancelOrder, checkoutQuote, createOrder, getOrder, listOrders } from './orders.service.js';
 
 export const ordersModule = Router();
 ordersModule.get('/checkout', requireAuth, async (req: Request, res: Response) => {
@@ -18,4 +18,7 @@ ordersModule.get('/orders', async (req: Request, res: Response) => {
 });
 ordersModule.get('/orders/:id', async (req: Request, res: Response) => {
   sendSuccess(res, await getOrder(req.user!.id, orderIdParamSchema.parse(req.params).id));
+});
+ordersModule.post('/orders/:id/cancel', async (req: Request, res: Response) => {
+  sendSuccess(res, await cancelOrder(req.user!.id, orderIdParamSchema.parse(req.params).id));
 });

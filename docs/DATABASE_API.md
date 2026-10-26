@@ -65,6 +65,8 @@ Each seller can manage only their own fulfillment items. The buyer sees the comb
 - POST `/api/orders/:id/payments`
 - POST `/api/orders/:id/cancel`
 
+Buyer order responses include `canCancel`. Cancellation is owner-only, applies to the whole order, and requires unpaid COD in `CONFIRMED` or unpaid manual transfer in `PENDING_PAYMENT`; submitted/verified/refunded payment attempts block cancellation. Eligible cancellation restores remaining product inventory, updates the order to `CANCELLED`, and records status history atomically. Repeated/concurrent cancellation returns 409 after the first success without restoring stock twice. Foreign or missing orders return 404. Future payment/status writers must acquire the same order-row lock before checking and changing state.
+
 Checkout creates an order from the authenticated user's current cart. The request contains `address` (`recipientName`, `phone`, `region`, `city`, `address`, optional `notes`) and `paymentMethod` (`COD`, `KBZPAY`, `WAVEPAY`, `BANK_TRANSFER`). Client prices, totals and item lists are ignored. The response includes purchase-time item snapshots grouped in `sellerGroups`, per-seller subtotals, the combined subtotal, delivery fee and total. The flat fee is configured by `DELIVERY_FEE_MMK` (default 0 MMK).
 
 Order list/detail routes return only orders belonging to the authenticated buyer. Lists use `page` and `pageSize`. Successful checkout clears purchased cart items; any validation, availability or stock failure leaves both inventory and cart unchanged. COD starts `CONFIRMED` with payment `PENDING`; prepaid orders start `PENDING_PAYMENT` pending later payment submission/verification.

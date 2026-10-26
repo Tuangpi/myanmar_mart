@@ -12,12 +12,27 @@ import { AppError } from '../../lib/errors.js';
 import { cartAction } from '../cart/cart.service.js';
 
 const orderInclude = {
+  payments: { select: { status: true } },
   items: {
     include: { store: true },
     orderBy: [{ storeId: 'asc' as const }, { id: 'asc' as const }],
   },
 };
 type StoredOrder = Prisma.OrderGetPayload<{ include: typeof orderInclude }>;
+
+function canBuyerCancel(order: StoredOrder): boolean {
+  const eligibleStatus =
+    order.paymentMethod === 'COD'
+      ? order.status === 'CONFIRMED'
+      : order.status === 'PENDING_PAYMENT';
+  return (
+    eligibleStatus &&
+    ['PENDING', 'REJECTED'].includes(order.paymentStatus) &&
+    !order.payments.some((payment) =>
+      ['SUBMITTED', 'VERIFIED', 'REFUNDED'].includes(payment.status),
+    )
+  );
+}
 
 function serialize(order: StoredOrder): OrderResponse {
   const groups = new Map<string, OrderResponse['sellerGroups'][number]>();
@@ -44,6 +59,7 @@ function serialize(order: StoredOrder): OrderResponse {
     });
   }
   return {
+    canCancel: canBuyerCancel(order),
     id: order.id,
     orderNumber: order.orderNumber,
     address: order.addressSnapshot as unknown as DeliveryAddress,
@@ -183,4 +199,54 @@ export async function getOrder(userId: string, id: string): Promise<OrderRespons
   });
   if (!order) throw AppError.notFound('Order not found');
   return serialize(order);
+}
+
+export async function cancelOrder(userId: string, id: string): Promise<OrderResponse> {
+  return getPrisma().$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM users WHERE id = ${userId} FOR UPDATE`;
+    const locked = await tx.$queryRaw<{ id: string }[]>`
+      SELECT id FROM orders WHERE id = ${id} AND buyer_id = ${userId} FOR UPDATE`;
+    if (!locked.length) throw AppError.notFound('Order not found');
+    const order = await tx.order.findUniqueOrThrow({ where: { id }, include: orderInclude });
+    if (!canBuyerCancel(order))
+      throw AppError.conflict('Order is no longer eligible for buyer cancellation');
+
+    // Match checkout's store/product lock order. Deleted products retain their order snapshots.
+    const storeIds = [...new Set(order.items.map((item) => item.storeId))].sort();
+    const productIds = [
+      ...new Set(order.items.flatMap((item) => (item.productId ? [item.productId] : []))),
+    ].sort();
+    if (storeIds.length)
+      await tx.$queryRaw(
+        Prisma.sql`SELECT id FROM stores WHERE id IN (${Prisma.join(storeIds)}) ORDER BY id FOR UPDATE`,
+      );
+    if (productIds.length)
+      await tx.$queryRaw(
+        Prisma.sql`SELECT id FROM products WHERE id IN (${Prisma.join(productIds)}) ORDER BY id FOR UPDATE`,
+      );
+    for (const productId of productIds) {
+      const quantity = order.items
+        .filter((item) => item.productId === productId)
+        .reduce((sum, item) => sum + item.quantity, 0);
+      if (!Number.isSafeInteger(quantity) || quantity < 1 || quantity > 2147483647)
+        throw AppError.conflict('Inventory cannot be restored safely');
+      const restored = await tx.product.updateMany({
+        where: { id: productId, stock: { lte: 2147483647 - quantity } },
+        data: { stock: { increment: quantity } },
+      });
+      if (restored.count !== 1) throw AppError.conflict('Inventory cannot be restored safely');
+    }
+    return serialize(
+      await tx.order.update({
+        where: { id },
+        data: {
+          status: 'CANCELLED',
+          statusHistory: {
+            create: { oldStatus: order.status, newStatus: 'CANCELLED', changedBy: userId },
+          },
+        },
+        include: orderInclude,
+      }),
+    );
+  });
 }

@@ -95,6 +95,13 @@ Backend modules: Auth and Users; Sellers and Stores; Products and Categories; Ca
 - Existing order items provide seller grouping. Product names/prices and delivery details are snapshotted; store display names remain live. Per-seller fulfillment states are deferred to T016.
 - Checkout serializes against cart edits, locks stores/products in stable order, decrements stock and clears purchased cart rows in the same transaction. Concurrent duplicate submissions against the same cart create at most one order; persisted idempotency keys are not implemented.
 
+## Buyer cancellation (T013)
+
+- Buyer history/detail pages use owner-scoped order APIs. Responses expose server-calculated `canCancel` for the UI; the cancellation endpoint independently rechecks eligibility.
+- Buyers may cancel unpaid COD orders in `CONFIRMED`, or unpaid manual-payment orders in `PENDING_PAYMENT`. Payment status must be `PENDING` or `REJECTED`, with no submitted, verified or refunded payment attempt. Processing and later states are not buyer-cancellable.
+- Cancellation applies to the whole order. An order-row lock prevents duplicate cancellation; inventory restoration, status update and history insertion are atomic. Deleted products are skipped while snapshots remain; inventory overflow rejects cancellation without partial changes.
+- Future payment/fulfillment writers must lock the order row before checking/changing payment or order state, so they serialize with cancellation. Full payment verification/state-machine work remains T015.
+
 ## Constraints
 
 - Do not implement features outside the MVP without approval.
