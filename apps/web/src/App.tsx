@@ -4,6 +4,7 @@ import { ProductDetailPage } from './pages/ProductDetailPage';
 import { SellerProductsPage } from './pages/SellerProductsPage';
 import { StorefrontPage } from './pages/StorefrontPage';
 import { CartPage } from './pages/CartPage';
+import { CheckoutPage } from './pages/CheckoutPage';
 
 function getHashSegment(resource: string): string | null {
   if (typeof window === 'undefined') return null;
@@ -20,6 +21,7 @@ export function App() {
   const [storeSlug, setStoreSlug] = useState<string | null>(() => getHashSegment('stores'));
   const [seller, setSeller] = useState(window.location.hash === '#/seller/products');
   const [cart, setCart] = useState(window.location.hash === '#/cart');
+  const [checkout, setCheckout] = useState(window.location.hash === '#/checkout');
 
   useEffect(() => {
     const onHashChange = () => {
@@ -27,11 +29,13 @@ export function App() {
       setStoreSlug(getHashSegment('stores'));
       setSeller(window.location.hash === '#/seller/products');
       setCart(window.location.hash === '#/cart');
+      setCheckout(window.location.hash === '#/checkout');
     };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
+  if (checkout) return <CheckoutPage />;
   if (cart) return <CartPage />;
   if (seller) return <SellerProductsPage />;
   if (storeSlug) return <StorefrontPage key={storeSlug} slug={storeSlug} />;

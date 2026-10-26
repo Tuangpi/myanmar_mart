@@ -159,6 +159,9 @@ function CartContent() {
               {t('cart.subtotal')}: {formatMMK(cart.subtotal)}
             </p>
             <p className="text-sm text-neutral-600">{t('cart.priceNotice')}</p>
+            {!busy && !cart.items.some((item) => !item.available || item.quantity > item.stock) && (
+              <a href="#/checkout" className="inline-block bg-primary text-white rounded px-4 py-2">{t('cart.checkout')}</a>
+            )}
           </>
         ))}
       <a href="#/" className="inline-block text-primary underline">

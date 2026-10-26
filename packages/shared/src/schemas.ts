@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PAYMENT_METHODS } from './constants.js';
 
 export const paginationQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -127,3 +128,22 @@ export const cartAddSchema = cartQuantitySchema.extend({
 });
 
 export const cartItemParamSchema = z.object({ id: z.string().uuid() });
+
+// Checkout accepts delivery details, not client prices or cart contents.
+export const deliveryAddressSchema = z.object({
+  recipientName: z.string().trim().min(2).max(100),
+  phone: z.string().trim().min(6).max(20),
+  region: z.string().trim().min(1).max(100),
+  city: z.string().trim().min(1).max(100),
+  address: z.string().trim().min(5).max(1000),
+  notes: z.string().trim().max(1000).default(''),
+});
+
+export const checkoutSchema = z.object({
+  address: deliveryAddressSchema,
+  paymentMethod: z.enum(PAYMENT_METHODS),
+});
+
+export type CheckoutInput = z.infer<typeof checkoutSchema>;
+export type DeliveryAddress = z.infer<typeof deliveryAddressSchema>;
+export const orderIdParamSchema = z.object({ id: z.string().uuid() });

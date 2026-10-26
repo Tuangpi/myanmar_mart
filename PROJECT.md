@@ -87,6 +87,14 @@ Backend modules: Auth and Users; Sellers and Stores; Products and Categories; Ca
 | D7  | Order status changes driven by an explicit transition map              | Requirement: "Only allow valid status transitions"                                         |
 | D8  | `order_items` snapshots `product_name` and `unit_price`                | Requirement: "Orders preserve product prices at purchase time"                             |
 
+## Checkout decisions (T012)
+
+- Checkout consumes the signed-in user's current cart. Client prices, totals, seller IDs and item lists are ignored.
+- `DELIVERY_FEE_MMK` sets one flat delivery fee per combined order; defaults to 0 until a rate is configured. `GET /api/checkout` quotes current totals before submission.
+- COD orders start `CONFIRMED` with payment `PENDING`; manual-transfer orders start `PENDING_PAYMENT`. Payment verification is required before processing prepaid orders.
+- Existing order items provide seller grouping. Product names/prices and delivery details are snapshotted; store display names remain live. Per-seller fulfillment states are deferred to T016.
+- Checkout serializes against cart edits, locks stores/products in stable order, decrements stock and clears purchased cart rows in the same transaction. Concurrent duplicate submissions against the same cart create at most one order; persisted idempotency keys are not implemented.
+
 ## Constraints
 
 - Do not implement features outside the MVP without approval.

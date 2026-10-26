@@ -1,4 +1,5 @@
-import type { UserRole, ProductStatus, StoreStatus } from './constants.js';
+import type { UserRole, ProductStatus, StoreStatus, OrderStatus, PaymentMethod } from './constants.js';
+import type { DeliveryAddress } from './schemas.js';
 
 export interface ApiError {
   code: string;
@@ -25,6 +26,41 @@ export interface CartResponse {
   items: CartItemResponse[];
   itemCount: number;
   subtotal: number;
+}
+
+export interface CheckoutQuote {
+  cart: CartResponse;
+  deliveryFee: number;
+  total: number;
+}
+
+export interface OrderItemResponse {
+  id: string;
+  productId: string | null;
+  productName: string;
+  unitPrice: number;
+  quantity: number;
+  subtotal: number;
+}
+
+export interface OrderResponse {
+  id: string;
+  orderNumber: string;
+  address: DeliveryAddress;
+  subtotal: number;
+  deliveryFee: number;
+  total: number;
+  paymentMethod: PaymentMethod;
+  paymentStatus: string;
+  status: OrderStatus;
+  createdAt: string;
+  sellerGroups: {
+    storeId: string;
+    storeName: string;
+    storeSlug: string;
+    subtotal: number;
+    items: OrderItemResponse[];
+  }[];
 }
 
 export interface ApiSuccess<T> {

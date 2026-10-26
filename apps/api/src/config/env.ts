@@ -12,6 +12,7 @@ const envSchema = z.object({
   UPLOAD_DIR: z.string().default('./storage/uploads'),
   MAX_UPLOAD_SIZE_MB: z.coerce.number().int().min(1).max(20).default(5),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
+  DELIVERY_FEE_MMK: z.coerce.number().int().min(0).max(2147483647).default(0),
 });
 
 export type Env = z.infer<typeof envSchema>;

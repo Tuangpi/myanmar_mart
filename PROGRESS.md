@@ -3,10 +3,10 @@
 ## Current State
 
 - **Current task:** None.
-- **Most recently completed:** T011 — Cart.
-- **Unfinished work:** T012–T020 in `TASKS.md`.
+- **Most recently completed:** T012 — Checkout and transactional order creation.
+- **Unfinished work:** T013–T020 in `TASKS.md`.
 - **Blockers:** None.
-- **Recommended next task:** T012 — Checkout and transactional order creation.
+- **Recommended next task:** T013 — Buyer order history and order details.
 
 ### Verified environment
 
@@ -103,6 +103,16 @@ Checked 2026-10-22:
 - **Checks:** Full `npm test` PASS: API 53/53, web 26/26, including concurrent first adds, stock caps, cross-user isolation, validation, stale products, mutations, routing, translation and error states. `npm run typecheck` PASS; `npm run build` PASS (existing Zod annotation warnings); `npm run lint` PASS (0 errors, 7 existing warnings); `git diff --check` PASS. Reviewed edited/new implementation and test files.
 - **Limitations:** Requires an existing authenticated cookie; no login screen, guest cart, checkout or browser-based visual verification added. Existing dependency-audit findings remain unresolved. T012 is next; not started.
 - **Suggested commit:** `feat: add authenticated shopping cart`.
+
+### T012 — Checkout and transactional order creation (DONE)
+
+- **Result:** Authenticated `GET /api/checkout` quotes the cart plus server-configured delivery fee; `POST /api/orders` consumes the current cart, ignores client prices/totals/items/buyer IDs, checks current product/store availability, snapshots product names/prices and delivery/contact details, generates a UUID-based order number, writes initial status history, decrements inventory and clears purchased cart rows in one transaction. User/store/product row locks serialize cart changes, duplicate submissions and competing purchases. Existing order items provide seller grouping and per-seller subtotals; no database migration or dependencies required.
+- **Read APIs:** Paginated `GET /api/orders` and `GET /api/orders/:id` return only the authenticated buyer's orders, with seller groups and combined totals. COD starts CONFIRMED with payment PENDING; manual methods start PENDING_PAYMENT. `DELIVERY_FEE_MMK` is a flat per-order fee, default 0 until configured, documented in the environment example and API specification.
+- **UI:** Cart links to `#/checkout` when stock/availability permits. Checkout includes a server quote, delivery form, contact number, all four payment method choices, shared validation, submission guard, error/retry states and seller-grouped confirmation. English/Burmese labels and notices explain that manual payment submission is deferred. Network failures warn that submission may have succeeded; persisted idempotency keys are not implemented.
+- **Files:** New orders API module/service/integration tests, web orders request helper and checkout tests; checkout/cart pages, hash routing, shared schemas/types/locales, environment config/example, API registration and project/API documentation updated.
+- **Checks:** Full `npm test` PASS: API 61/61, web 35/35. Tests cover multi-seller totals, fee, ignored client prices, snapshots, ownership/pagination, empty/unavailable carts, insufficient-stock rollback, concurrent last-unit purchases, duplicate submits, prepaid states, MMK overflow, quote routing, form submission, grouped confirmation, errors/retry, translations and disabled submission. `npm run typecheck` PASS; `npm run build` PASS (existing Zod annotation warnings); `npm run lint` PASS (0 errors, 7 existing warnings); `git diff --check` PASS. Reviewed implementation and test files.
+- **Limitations:** No browser visual verification; no saved-address management, durable idempotency keys, payment submission/verification, order history UI or per-seller fulfillment statuses added. Pending prepaid orders consume inventory; expiry/release is not implemented. Existing dependency-audit findings remain unresolved. T013 is next; not started.
+- **Suggested commit:** `feat: add transactional checkout and order creation`.
 
 ## Notes
 

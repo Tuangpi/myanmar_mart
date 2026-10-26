@@ -89,7 +89,7 @@ All tasks start at `TODO` unless noted. A task is `DONE` only when its expected 
 
 ### T012 — Checkout and transactional order creation
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** `POST /api/orders` creating an order inside a database transaction; server-recalculated prices and totals; transactional stock checks and decrements; delivery address snapshot and contact number; multi-seller order grouping; delivery fee; order number generation; `GET /api/orders` and `GET /api/orders/:id`.
 - **Completion check:** A checkout spanning two sellers produces one customer-facing order with separate seller groups and correct per-seller totals; API tests confirm client-supplied prices are ignored and that insufficient stock fails without creating an order or decrementing stock.
 - **Dependencies:** T011, T002

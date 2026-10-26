@@ -54,6 +54,7 @@ Each seller can manage only their own fulfillment items. The buyer sees the comb
 - PATCH `/api/seller/orders/:id/status`
 
 ### Cart and Orders
+- GET `/api/checkout` — authenticated cart quote with server delivery fee and combined total.
 - GET `/api/cart`
 - POST `/api/cart/items`
 - PATCH `/api/cart/items/:id`
@@ -63,6 +64,10 @@ Each seller can manage only their own fulfillment items. The buyer sees the comb
 - GET `/api/orders/:id`
 - POST `/api/orders/:id/payments`
 - POST `/api/orders/:id/cancel`
+
+Checkout creates an order from the authenticated user's current cart. The request contains `address` (`recipientName`, `phone`, `region`, `city`, `address`, optional `notes`) and `paymentMethod` (`COD`, `KBZPAY`, `WAVEPAY`, `BANK_TRANSFER`). Client prices, totals and item lists are ignored. The response includes purchase-time item snapshots grouped in `sellerGroups`, per-seller subtotals, the combined subtotal, delivery fee and total. The flat fee is configured by `DELIVERY_FEE_MMK` (default 0 MMK).
+
+Order list/detail routes return only orders belonging to the authenticated buyer. Lists use `page` and `pageSize`. Successful checkout clears purchased cart items; any validation, availability or stock failure leaves both inventory and cart unchanged. COD starts `CONFIRMED` with payment `PENDING`; prepaid orders start `PENDING_PAYMENT` pending later payment submission/verification.
 
 ### Admin
 - GET `/api/admin/sellers`
