@@ -1,2 +1,3 @@
+/* global console */
 import test from './test.json';
 console.log(test.app.name);

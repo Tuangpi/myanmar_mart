@@ -176,5 +176,18 @@
     "forbidden": "You do not have permission to do this",
     "server": "Server error. Please try again later.",
     "rateLimit": "Too many requests. Please wait a moment."
+  },
+  "catalogPage": {
+    "searchPlaceholder": "Search products...",
+    "filterCategory": "Category",
+    "allCategories": "All categories",
+    "sortBy": "Sort by",
+    "sortNewest": "Newest",
+    "sortName": "Name",
+    "sortPrice": "Price",
+    "sortOrder": "Sort order",
+    "showing": "{count} of {total} products",
+    "noImage": "No image",
+    "inStock": "{count} in stock"
   }
 }

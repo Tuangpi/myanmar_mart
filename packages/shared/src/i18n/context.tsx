@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Locale } from './index';
-import { getAvailableLocales, getLocale, getTranslations, loadTranslations, setLocale, SUPPORTED_LOCALES, t } from './index';
+import { LOCALE_MESSAGES } from './locales.js';
+import { getAvailableLocales, getLocale, loadTranslations, setLocale, SUPPORTED_LOCALES, t } from './index';
 
 let initialLocale: Locale | null = null;
 
@@ -58,28 +59,33 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     return stored;
   });
 
+  // Ensure translations are available on the very first render.
+  loadTranslations({ locale, translations: LOCALE_MESSAGES, fallbackLocale: 'en' });
+
+  const setLocaleCallback = useCallback((next: Locale) => {
+    setLocaleState(next);
+    try {
+      (globalThis as any).window.localStorage.setItem('myanmart.locale', next);
+    } catch {
+      // ignore storage errors
+    }
+    setLocale(next);
+  }, []);
+
   const value = useMemo<I18nContextValue>(
     () => ({
       locale,
       availableLocales: getAvailableLocales(),
-      setLocale: useCallback((next: Locale) => {
-        setLocaleState(next);
-        try {
-          (globalThis as any).window.localStorage.setItem('myanmart.locale', next);
-        } catch {
-          // ignore storage errors
-        }
-        setLocale(next);
-      }, []),
+      setLocale: setLocaleCallback,
       t: (key: string, values: Record<string, string | number> = {}) => t(key, values),
     }),
-    [locale],
+    [locale, setLocaleCallback],
   );
 
   useEffect(() => {
     loadTranslations({
       locale,
-      translations: getTranslations(),
+      translations: LOCALE_MESSAGES,
       fallbackLocale: 'en',
     });
   }, [locale]);

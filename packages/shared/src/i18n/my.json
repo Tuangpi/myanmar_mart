@@ -176,5 +176,18 @@
     "forbidden": " ဤအရာကိုလုပ်နိုင်ခြင်းမရှိ",
     "server": " Server error. အချိန်ကျပါကပြန်လိုက်ပါ",
     "rateLimit": " များပြီးခေါ်ပါ. ခဏနေပါ"
+  },
+  "catalogPage": {
+    "searchPlaceholder": "ထုတ်ကုန်ရှာဖွေရန်...",
+    "filterCategory": "အမျိုးအစား",
+    "allCategories": "အမျိုးအစားအားလုံး",
+    "sortBy": "စီစဉ်ရန်",
+    "sortNewest": "အသစ်ဆုံး",
+    "sortName": "အမည်",
+    "sortPrice": "စျေးနှုန်း",
+    "sortOrder": "စီစဉ်မှု",
+    "showing": "{count} / {total} ထုတ်ကုန်",
+    "noImage": "ပုံမရှိ",
+    "inStock": "{count} လက်ကျန်"
   }
 }

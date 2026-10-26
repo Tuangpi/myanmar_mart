@@ -3,10 +3,10 @@
 ## Current State
 
 - **Current task:** None.
-- **Most recently completed:** T005 — Public catalog API.
-- **Unfinished work:** T006–T020 in `TASKS.md`.
+- **Most recently completed:** T006 — Buyer catalog browsing UI.
+- **Unfinished work:** T007–T020 in `TASKS.md`.
 - **Blockers:** None.
-- **Recommended next task:** T006 — Buyer catalog browsing UI.
+- **Recommended next task:** T007 — Product detail page.
 
 ### Verified environment
 
@@ -55,6 +55,13 @@ Checked 2026-10-22:
 - **Files changed:** `apps/api/src/modules/catalog/{catalog.controller.ts,catalog.routes.ts,catalog.module.ts,catalog.test.ts}`; `packages/shared/src/{schemas.ts,types.ts}`; `apps/api/src/app.ts`.
 - **Checks run:** `npm test --workspace=@myanmart/api` — 27/27 PASS (catalog 17, auth 8, app 2). `npm run typecheck` PASS. `npm run build` PASS. (Lint has pre-existing warnings plus one error in `packages/shared/src/i18n/test.mjs` unrelated to T005.)
 - **Follow-up:** None.
+
+### T006 — Buyer catalog browsing UI (DONE)
+
+- **Result:** Catalog page now loads categories and products from the public catalog API with search (debounced), category filter, sort field/order, and server-side pagination. Product cards show thumbnail, name, price (MMK), store, category, and stock state. Fixed the i18n provider so translations load on first render and the layout no longer calls hooks outside the provider.
+- **Files changed:** `apps/web/src/pages/CatalogPage.tsx`; `apps/web/src/App.tsx`; `apps/web/src/layouts/I18nLayout.tsx`; `packages/shared/src/i18n/context.tsx`; `packages/shared/src/i18n/en.json`; `packages/shared/src/i18n/my.json`; `packages/shared/src/i18n/test.mjs`.
+- **Checks run:** `npm test --workspace=@myanmart/web` — 1/1 PASS; `npm run typecheck` PASS; `npm run build` PASS (shared, api, web). `npm run lint` — 0 errors, 7 warnings.
+- **Follow-up:** Product detail page (T007) can link from catalog cards.
 
 ## Notes
 

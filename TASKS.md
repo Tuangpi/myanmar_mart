@@ -45,7 +45,7 @@ All tasks start at `TODO` unless noted. A task is `DONE` only when its expected 
 
 ### T006 — Buyer catalog browsing UI
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** Product grid, category browsing, search box with debounce, filter and sort controls, and pagination wired to T005.
 - **Completion check:** UI shows products loaded from the API (no mock data), and changing a filter updates the displayed results.
 - **Dependencies:** T004, T005
