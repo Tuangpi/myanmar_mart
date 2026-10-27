@@ -17,7 +17,9 @@ export async function requestOrder<T>(
     signal,
     ...(body === undefined
       ? {}
-      : { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }),
+      : body instanceof FormData
+        ? { body }
+        : { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }),
   });
   const json = (await response.json()) as ApiResponse<T>;
   if (!response.ok || !json.success) throw new OrderRequestError(response.status);

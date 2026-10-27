@@ -11,6 +11,7 @@ import { sellerModule } from './modules/seller/seller.module.js';
 import { adminModule } from './modules/admin/admin.module.js';
 import { cartModule } from './modules/cart/cart.module.js';
 import { ordersModule } from './modules/orders/orders.module.js';
+import { paymentsModule } from './modules/payments/payments.module.js';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 
 export function createApp() {
@@ -41,6 +42,7 @@ export function createApp() {
   app.use(env.API_PREFIX, adminModule);
   app.use(env.API_PREFIX, cartModule);
   app.use(env.API_PREFIX, ordersModule);
+  app.use(env.API_PREFIX, paymentsModule);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

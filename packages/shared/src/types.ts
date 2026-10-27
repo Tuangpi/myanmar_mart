@@ -1,4 +1,10 @@
-import type { UserRole, ProductStatus, StoreStatus, OrderStatus, PaymentMethod } from './constants.js';
+import type {
+  UserRole,
+  ProductStatus,
+  StoreStatus,
+  OrderStatus,
+  PaymentMethod,
+} from './constants.js';
 import type { DeliveryAddress } from './schemas.js';
 
 export interface ApiError {
@@ -67,6 +73,33 @@ export interface OrderResponse {
 export interface ApiSuccess<T> {
   success: true;
   data: T;
+}
+
+export interface PaymentAttemptResponse {
+  id: string;
+  method: PaymentMethod;
+  amount: number;
+  transactionReference: string | null;
+  receiptUrl: string | null;
+  status: string;
+  verifiedBy: string | null;
+  createdAt: string;
+}
+
+export interface OrderPaymentsResponse {
+  orderId: string;
+  orderNumber: string;
+  total: number;
+  method: PaymentMethod;
+  status: OrderStatus;
+  paymentStatus: string;
+  instructions: string;
+  canSubmit: boolean;
+  attempts: PaymentAttemptResponse[];
+}
+
+export interface PaymentReviewOrder extends OrderPaymentsResponse {
+  allowedStatuses: OrderStatus[];
 }
 
 export interface ApiFailure {

@@ -13,6 +13,9 @@ const envSchema = z.object({
   MAX_UPLOAD_SIZE_MB: z.coerce.number().int().min(1).max(20).default(5),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   DELIVERY_FEE_MMK: z.coerce.number().int().min(0).max(2147483647).default(0),
+  PAYMENT_INSTRUCTIONS_KBZPAY: z.string().max(2000).default(''),
+  PAYMENT_INSTRUCTIONS_WAVEPAY: z.string().max(2000).default(''),
+  PAYMENT_INSTRUCTIONS_BANK_TRANSFER: z.string().max(2000).default(''),
 });
 
 export type Env = z.infer<typeof envSchema>;

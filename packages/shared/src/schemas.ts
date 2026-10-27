@@ -119,9 +119,11 @@ export const sellerProductStockSchema = z
 export type SellerProductStockInput = z.infer<typeof sellerProductStockSchema>;
 
 // --- Cart schemas (T011) ---
-export const cartQuantitySchema = z.object({
-  quantity: z.number().int().min(1).max(2147483647),
-}).strict();
+export const cartQuantitySchema = z
+  .object({
+    quantity: z.number().int().min(1).max(2147483647),
+  })
+  .strict();
 
 export const cartAddSchema = cartQuantitySchema.extend({
   productId: z.string().uuid(),
@@ -147,3 +149,24 @@ export const checkoutSchema = z.object({
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
 export type DeliveryAddress = z.infer<typeof deliveryAddressSchema>;
 export const orderIdParamSchema = z.object({ id: z.string().uuid() });
+
+export const paymentSubmissionSchema = z
+  .object({
+    transactionReference: z.string().trim().min(1).max(200),
+  })
+  .strict();
+export const paymentReviewSchema = z
+  .object({
+    decision: z.enum(['VERIFIED', 'REJECTED']),
+  })
+  .strict();
+export const orderTransitionSchema = z
+  .object({
+    status: z.enum(['PROCESSING', 'SHIPPED', 'DELIVERED', 'REFUNDED']),
+    transactionReference: z.string().trim().min(1).max(200).optional(),
+  })
+  .strict()
+  .refine(
+    (value) => value.status !== 'REFUNDED' || !!value.transactionReference,
+    'A manual refund reference is required',
+  );

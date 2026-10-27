@@ -3,10 +3,10 @@
 ## Current State
 
 - **Current task:** None.
-- **Most recently completed:** T013 — Buyer order history and order details (Phase 3 complete).
-- **Unfinished work:** T014–T020 in `TASKS.md`.
+- **Most recently completed:** T014 and T015 — Manual payment submission, verification and order state machine.
+- **Unfinished work:** T016–T020 in `TASKS.md`.
 - **Blockers:** None.
-- **Recommended next task:** T014 — Payment methods and manual payment submission.
+- **Recommended next task:** T016 — Seller fulfillment and buyer order tracking.
 
 ### Verified environment
 
@@ -25,6 +25,17 @@ Checked 2026-10-22:
 
 ## Task notes
 
+### T014 and T015 — Payment submission, verification and order state machine (DONE)
+
+- **Result:** Buyer order details display configured marketplace receiving instructions, a reference/receipt submission form, previous attempts and private receipt links. All three prepaid methods use server-derived method/amount. Rejection enables a new attempt; a submitted payment blocks cancellation and duplicate submission. English/Burmese labels, retry/error states and uncertain-response recovery included.
+- **Review:** Paginated screens at `#/payments/admin` and `#/payments/seller` allow verification/rejection, valid whole-order status changes and full manual refund recording. Backend enforces roles; sellers must own every order item through approved stores. Mixed-seller payments require admin review. Every review stores `verified_by`; COD delivery explicitly records cash collection. Refund references preserve original verification and add a separate REFUNDED record. No external payment/refund API is called.
+- **Integrity/security:** Shared eight-state transition map and transactional writer produce exactly one history row per change. Payment writers use the same order lock as cancellation. Duplicate submissions/reviews/refunds serialize. Prepaid processing and refunds require a verified payment record. Receipts reuse existing bounded MIME/signature image validation with a separate private directory; owner/reviewer-scoped downloads use no-store caching, and failed submissions remove their saved files.
+- **API:** Buyer GET/POST `/api/orders/:id/payments`; authenticated GET `/api/orders/:id/payments/:paymentId/receipt`. Admin/seller GET `/api/{admin|seller}/payment-orders`, POST `/:id/payments/:paymentId/review` and POST `/:id/status` under that base. Reference/receipt uploads are multipart with `transactionReference` and `receipt` fields. Review accepts `decision: VERIFIED|REJECTED`; status accepts PROCESSING/SHIPPED/DELIVERED/REFUNDED, with `transactionReference` required for refunds.
+- **Files/config:** New payments API service/routes/integration tests, order transition helper, buyer payment component/tests and review page/tests. Updated order cancellation, private image storage factory, app routing/navigation, shared schemas/types/constants/locales, API env example and project records. Existing schema suffices; no migration or dependency added. Configure `PAYMENT_INSTRUCTIONS_KBZPAY`, `PAYMENT_INSTRUCTIONS_WAVEPAY`, `PAYMENT_INSTRUCTIONS_BANK_TRANSFER` with public receiving instructions. Empty instructions disable submission. Upload cap uses `MAX_UPLOAD_SIZE_MB` (default 5).
+- **Checks:** Full `npm test` PASS: API 78/78, web 53/53 (19 new tests). Covers privacy/auth, upload type/content/size validation, multiple attempts, concurrent writes, cancellation races, seller/mixed-store scope, invalid transitions, one history per accepted change, verified-record gates, manual refunds, COD collection, buyer multipart UI, uncertain responses, review/refund confirmations and pagination. `npm run typecheck` PASS; `npm run build` PASS (existing Zod annotation warnings); `npm run lint` PASS (0 errors, 7 existing warnings); `git diff --check` PASS. Reviewed new/edited implementation and tests.
+- **Limitations:** No browser visual/E2E verification. Local private receipt storage only; production storage adapter remains deployment work. Signature checks are not full image decoding or malware scanning. Refunds are whole-order, manually acknowledged and do not restock products. Seller instruction management and per-seller item fulfillment remain T016. Existing dependency-audit findings remain unresolved. T016 not started.
+- **Suggested commit:** `feat: add manual payments and verified order transitions`.
+
 ### T001 — Monorepo scaffold and toolchain (DONE)
 
 - **Result:** npm-workspaces monorepo created: `apps/api` (Express 5 + TypeScript, `tsx` dev / `tsc` build), `apps/web` (Vite 7 + React 19 + Tailwind CSS 4), `packages/shared` (Zod schemas, constants, shared types). Root TypeScript project references, ESLint 9 flat config, Prettier config, `.gitignore`, and a `.env.example` for the API. API exposes `GET /api/health` behind a standardized `{ success, data }` / `{ success, error }` envelope with a central error handler.
@@ -42,8 +53,8 @@ Checked 2026-10-22:
 - **Checks run:** `npx tsc --noEmit` (PASS), `npm run test --workspace=@myanmart/api` (10/10 PASS), `npm run build --workspace=@myanmart/api` (PASS), manual curl E2E on `:4000` (register, login, /me, admin-403, no-token-401, wrong-password-401 all PASS).
 - **Follow-up:** None — T003 complete.
 
-
 ### T004 — Application shell, layout, and i18n (DONE)
+
 - **Status:** DONE
 - **Expected result:** Responsive mobile-first layout with Tailwind CSS and shadcn-style UI primitives; Burmese (`my`) and English (`en`) language support with a language switcher and persisted choice; global UI primitives in `packages/shared` where reusable; English + Burmese visible UI text.
 - **Completion check:** App renders at mobile and desktop widths; switching language updates visible UI text and the choice survives a page reload.
@@ -128,4 +139,3 @@ Checked 2026-10-22:
 
 - i18n layer, primitive components, layout, and shell integration test go here.
 - Backend unchanged for this task.
-

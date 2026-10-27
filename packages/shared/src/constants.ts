@@ -25,8 +25,25 @@ export type OrderStatus = (typeof ORDER_STATUSES)[number];
 export const PAYMENT_METHODS = ['COD', 'KBZPAY', 'WAVEPAY', 'BANK_TRANSFER'] as const;
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
-export const PAYMENT_STATUSES = ['PENDING', 'SUBMITTED', 'VERIFIED', 'REJECTED'] as const;
+export const PAYMENT_STATUSES = [
+  'PENDING',
+  'SUBMITTED',
+  'VERIFIED',
+  'REJECTED',
+  'REFUNDED',
+] as const;
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
+
+export const ORDER_TRANSITIONS: Record<OrderStatus, readonly OrderStatus[]> = {
+  PENDING_PAYMENT: ['PAYMENT_SUBMITTED', 'CANCELLED'],
+  PAYMENT_SUBMITTED: ['PENDING_PAYMENT', 'CONFIRMED'],
+  CONFIRMED: ['PROCESSING', 'CANCELLED', 'REFUNDED'],
+  PROCESSING: ['SHIPPED', 'REFUNDED'],
+  SHIPPED: ['DELIVERED', 'REFUNDED'],
+  DELIVERED: ['REFUNDED'],
+  CANCELLED: [],
+  REFUNDED: [],
+};
 
 export const CURRENCY = 'MMK';
 

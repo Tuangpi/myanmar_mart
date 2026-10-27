@@ -5,6 +5,11 @@ import { OrdersPage } from './OrdersPage';
 import { App } from '../App';
 
 const fetchMock = vi.fn();
+// Payment submission has its own component tests and independent API requests.
+vi.mock('../components/OrderPayments', () => ({
+  OrderPayments: () => null,
+  PaymentAttempts: () => null,
+}));
 const order: OrderResponse = {
   canCancel: true,
   id: 'order-1',

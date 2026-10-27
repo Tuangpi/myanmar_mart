@@ -105,14 +105,14 @@ All tasks start at `TODO` unless noted. A task is `DONE` only when its expected 
 
 ### T014 — Payment methods and manual payment submission
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** Cash on delivery plus manual KBZPay, WavePay, and bank transfer; `POST /api/orders/:id/payments` accepting a transaction reference and receipt image; seller or marketplace payment instructions displayed; multiple payment attempts supported; no wallet PINs or payment credentials stored.
 - **Completion check:** A prepaid order cannot advance until a payment record exists, and receipt uploads reject disallowed file types and oversized files.
 - **Dependencies:** T012
 
 ### T015 — Payment verification and order status state machine
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** Admin and seller payment verification writing `verified_by`; the eight statuses (Pending Payment, Payment Submitted, Confirmed, Processing, Shipped, Delivered, Cancelled, Refunded) driven by an explicit transition map; every change recorded in `order_status_history`; refunds recorded manually.
 - **Completion check:** API tests confirm an invalid transition is rejected and that every accepted transition writes exactly one history row.
 - **Dependencies:** T014, T008

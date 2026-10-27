@@ -3,6 +3,7 @@ import { useI18n, type OrderResponse, type Paginated } from '@myanmart/shared';
 import { I18nLayout } from '../layouts/I18nLayout';
 import { OrderRequestError, requestOrder } from '../lib/orders';
 import { formatMMK } from '../lib/format';
+import { OrderPayments } from '../components/OrderPayments';
 
 function errorKey(error: unknown): string {
   if (error instanceof OrderRequestError) {
@@ -202,6 +203,7 @@ function OrdersContent({ id }: { id?: string }) {
             <time dateTime={order.createdAt}>{date(order.createdAt)}</time>
           </p>
           <OrderSummary order={order} />
+          <OrderPayments orderId={order.id} onChange={() => setReload((value) => value + 1)} />
           <section className="space-y-2">
             <h4 className="font-semibold">{t('checkout.address')}</h4>
             <p>

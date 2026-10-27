@@ -15,17 +15,32 @@ function I18nLayoutInner({ children }: { children: React.ReactNode }) {
     <main className="min-h-dvh bg-gray-50">
       <header className="flex flex-col sm:flex-row items-center gap-4 px-4 py-3 border-b border-neutral-200 bg-white">
         <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">{t('app.name')}</h1>
-        <nav className="flex flex-wrap gap-4"><a href="#/">{t('sellerProducts.catalog')}</a><a href="#/cart">{t('cart.title')}</a><a href="#/orders">{t('ordersPage.title')}</a><a href="#/seller/products">{t('sellerProducts.title')}</a></nav>
+        <nav className="flex flex-wrap gap-4">
+          <a href="#/">{t('sellerProducts.catalog')}</a>
+          <a href="#/cart">{t('cart.title')}</a>
+          <a href="#/orders">{t('ordersPage.title')}</a>
+          <a href="#/seller/products">{t('sellerProducts.title')}</a>
+        </nav>
+        <a href="#/payments/seller">{t('payment.sellerReview')}</a>
+        <a href="#/payments/admin">{t('payment.adminReview')}</a>
         <div className="flex gap-2">
           <button
             onClick={() => setLocale('en')}
-            className={locale === 'en' ? 'bg-primary text-white px-3 py-1 rounded text-sm' : 'px-3 py-1 rounded text-neutral-700 text-sm'}
+            className={
+              locale === 'en'
+                ? 'bg-primary text-white px-3 py-1 rounded text-sm'
+                : 'px-3 py-1 rounded text-neutral-700 text-sm'
+            }
           >
             EN
           </button>
           <button
             onClick={() => setLocale('my')}
-            className={locale === 'my' ? 'bg-primary text-white px-3 py-1 rounded text-sm' : 'px-3 py-1 rounded text-neutral-700 text-sm'}
+            className={
+              locale === 'my'
+                ? 'bg-primary text-white px-3 py-1 rounded text-sm'
+                : 'px-3 py-1 rounded text-neutral-700 text-sm'
+            }
           >
             MY
           </button>

@@ -102,6 +102,16 @@ Backend modules: Auth and Users; Sellers and Stores; Products and Categories; Ca
 - Cancellation applies to the whole order. An order-row lock prevents duplicate cancellation; inventory restoration, status update and history insertion are atomic. Deleted products are skipped while snapshots remain; inventory overflow rejects cancellation without partial changes.
 - Future payment/fulfillment writers must lock the order row before checking/changing payment or order state, so they serialize with cancellation. Full payment verification/state-machine work remains T015.
 
+## Payments and order transitions (T014–T015)
+
+- Marketplace receiving instructions use `PAYMENT_INSTRUCTIONS_KBZPAY`, `PAYMENT_INSTRUCTIONS_WAVEPAY`, and `PAYMENT_INSTRUCTIONS_BANK_TRANSFER`. Empty configuration disables submission and shows a contact-marketplace message. Configure public receiving details only, never PINs or passwords. Seller instruction management remains T016.
+- Buyers submit a transaction reference and a PNG/JPEG/WebP receipt using multipart `POST /api/orders/:id/payments`. Amount and method come from the locked order. Rejection permits another attempt; pending review blocks duplicate attempts and cancellation.
+- Receipt files use a separate private storage directory and authenticated, owner/reviewer-scoped download routes. Admins can review all orders. Approved sellers can review only orders whose every item belongs to their approved stores; mixed-seller payments require an admin.
+- An explicit shared transition map and transactional writer record one history entry per status change. Submission/review, buyer cancellation, fulfillment transitions and refunds acquire the order-row lock. Checkout writes the initial history entry atomically.
+- Verification records `verified_by`, confirms prepaid orders, and is mandatory before processing. Rejection returns to Pending Payment. Whole-order review/status UI is at `#/payments/admin` and `#/payments/seller`; per-seller item fulfillment remains T016.
+- COD delivery explicitly acknowledges cash collection and creates a verified payment. Full refunds require a verified collection and a manual refund reference; they create a separate REFUNDED payment record, preserve the original verification and set the order/payment aggregate to REFUNDED. No external transfer occurs. Refunds do not automatically restock products; physical returns are not implemented.
+- No schema migration or new dependency was required: payment attempts, verifier and status history already exist in the schema.
+
 ## Constraints
 
 - Do not implement features outside the MVP without approval.

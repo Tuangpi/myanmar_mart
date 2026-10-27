@@ -10,6 +10,7 @@ import { env } from '../../config/env.js';
 import { getPrisma } from '../../lib/prisma.js';
 import { AppError } from '../../lib/errors.js';
 import { cartAction } from '../cart/cart.service.js';
+import { changeOrderStatus } from './order-state.js';
 
 const orderInclude = {
   payments: { select: { status: true } },
@@ -236,17 +237,7 @@ export async function cancelOrder(userId: string, id: string): Promise<OrderResp
       });
       if (restored.count !== 1) throw AppError.conflict('Inventory cannot be restored safely');
     }
-    return serialize(
-      await tx.order.update({
-        where: { id },
-        data: {
-          status: 'CANCELLED',
-          statusHistory: {
-            create: { oldStatus: order.status, newStatus: 'CANCELLED', changedBy: userId },
-          },
-        },
-        include: orderInclude,
-      }),
-    );
+    await changeOrderStatus(tx, order, 'CANCELLED', userId);
+    return serialize(await tx.order.findUniqueOrThrow({ where: { id }, include: orderInclude }));
   });
 }
