@@ -1,4 +1,21 @@
 {
+  "fulfillment": {
+    "title": "Seller orders",
+    "scope": "Only your items and item subtotals are shown. Each item is fulfilled separately.",
+    "summary": "Sales summary",
+    "orderCount": "Orders",
+    "delivered": "Delivered item sales",
+    "active": "Active item value",
+    "summaryNote": "Lifetime item subtotals, excluding delivery fees and cancelled/refunded orders. This is not a payout report.",
+    "instructions": "Payment instructions",
+    "instructionsNote": "Public receiving instructions only. Never enter wallet PINs or passwords. Used only for single-store orders; mixed-store orders use marketplace instructions. Empty fields use marketplace defaults.",
+    "save": "Save instructions",
+    "saved": "Payment instructions saved.",
+    "confirmCod": "Confirm this item was delivered and its cash collected? Whole-order collection is recorded after every item is delivered.",
+    "itemStatus": "Item status",
+    "timeline": "Order timeline",
+    "refreshNote": "Updates automatically every 15 seconds. Use Retry to refresh now."
+  },
   "app": {
     "name": "MyanMart",
     "tagline": "A Myanmar-first multi-vendor marketplace."

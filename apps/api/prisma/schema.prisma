@@ -113,6 +113,7 @@ model Store {
   slug        String      @unique
   description String?
   logoUrl     String?     @map("logo_url")
+  paymentInstructions Json @default("{}") @map("payment_instructions")
   status      StoreStatus @default(PENDING)
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
@@ -248,6 +249,8 @@ model OrderItem {
   unitPrice   Int      @map("unit_price") // MMK integer
   quantity    Int
   subtotal    Int      // MMK integer
+  fulfillmentStatus String @default("CONFIRMED") @map("fulfillment_status")
+  fulfillmentHistory Json @default("[]") @map("fulfillment_history")
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@index([orderId])

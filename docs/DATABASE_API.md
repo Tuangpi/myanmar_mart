@@ -4,14 +4,14 @@
 
 - `users`: id, name, email, phone, password_hash, role, status, created_at
 - `addresses`: id, user_id, recipient_name, phone, region, city, address, notes
-- `stores`: id, owner_id, name, slug, description, logo_url, status
+- `stores`: id, owner_id, name, slug, description, logo_url, status, payment_instructions (JSON object)
 - `categories`: id, name, slug, parent_id, status
 - `products`: id, store_id, category_id, name, slug, description, price, stock, status
 - `product_images`: id, product_id, image_url, sort_order
 - `carts`: id, user_id, created_at
 - `cart_items`: id, cart_id, product_id, quantity
 - `orders`: id, order_number, buyer_id, address_snapshot, subtotal, delivery_fee, total, payment_method, payment_status, status, created_at
-- `order_items`: id, order_id, store_id, product_id, product_name, unit_price, quantity, subtotal
+- `order_items`: id, order_id, store_id, product_id, product_name, unit_price, quantity, subtotal, fulfillment_status, fulfillment_history (JSON array)
 - `payments`: id, order_id, method, amount, transaction_reference, receipt_url, status, verified_by, created_at
 - `order_status_history`: id, order_id, old_status, new_status, changed_by, created_at
 
@@ -52,6 +52,19 @@ Each seller can manage only their own fulfillment items. The buyer sees the comb
 - DELETE `/api/seller/products/:id`
 - GET `/api/seller/orders`
 - PATCH `/api/seller/orders/:id/status`
+- GET `/api/seller/sales-summary`
+- GET `/api/seller/payment-instructions`
+- PATCH `/api/seller/payment-instructions`
+
+Seller order lists are paginated (`page`, `pageSize`) and include only owned item snapshots, owned subtotal, order/payment status and delivery details. Status PATCH accepts `{ itemId, status }`, with exactly one forward step through CONFIRMED → PROCESSING → SHIPPED → DELIVERED. Foreign order/items return 404; invalid transitions, unpaid prepaid orders and terminal orders return 409; unapproved stores return 403. Every mutation holds the order row lock and rechecks store approval under its row lock.
+
+The combined order follows its least-advanced item. Item updates append timestamped fulfillment history; aggregate status changes write one order history row. Buyer cancellation is blocked after any item starts processing. Delivering COD items acknowledges cash collection; the final delivered item records one full-order collection. Existing whole-order status controls update lagging item states without regressions.
+
+Sales summary returns lifetime `orderCount`, `deliveredSubtotal`, and `activeSubtotal`. Item money totals exclude delivery fees and cancelled/refunded orders. The order count includes all statuses. These are sales/activity figures, not payouts.
+
+Payment instructions GET/PATCH returns/accepts `{ KBZPAY, WAVEPAY, BANK_TRANSFER }`, each a public receiving-instructions string of at most 2000 characters. Unknown fields are rejected. Only the authenticated seller's store is editable. Single-store orders use nonblank store overrides; blank fields and mixed-store orders use marketplace configuration. Never submit PINs or passwords.
+
+Buyer order responses add `statusHistory` and item `fulfillmentStatus`/`fulfillmentHistory`, with `{ status, createdAt }` timeline entries. The buyer detail UI polls every 15 seconds and supports manual refresh. Migrated historical items retain current fulfillment status; no historical item events are fabricated.
 
 ### Cart and Orders
 - GET `/api/checkout` — authenticated cart quote with server delivery fee and combined total.

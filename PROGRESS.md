@@ -3,10 +3,10 @@
 ## Current State
 
 - **Current task:** None.
-- **Most recently completed:** T014 and T015 — Manual payment submission, verification and order state machine.
-- **Unfinished work:** T016–T020 in `TASKS.md`.
+- **Most recently completed:** T016 — Seller fulfillment and buyer order tracking.
+- **Unfinished work:** T017–T020 in `TASKS.md`.
 - **Blockers:** None.
-- **Recommended next task:** T016 — Seller fulfillment and buyer order tracking.
+- **Recommended next task:** T017 — Admin dashboard and moderation.
 
 ### Verified environment
 
@@ -24,6 +24,16 @@ Checked 2026-10-22:
 - Entire `apps/`, `packages/`, and root scaffold — new, uncommitted.
 
 ## Task notes
+
+### T016 — Seller fulfillment and buyer order tracking (DONE)
+
+- **Result:** Seller board at `#/seller/orders` provides paginated owned item snapshots/subtotals, delivery details, per-item forward fulfillment controls, payment-instructions editing and lifetime sales/activity summary. Buyer order details show order/item timelines with 15-second polling and manual refresh. English/Burmese labels included.
+- **Integrity:** Item states progress CONFIRMED → PROCESSING → SHIPPED → DELIVERED. Order row lock serializes fulfillment with cancellation/payments; store row lock rechecks approval. Foreign items are rejected. Prepaid fulfillment requires a verified record. Aggregate order status follows the least-advanced item, recording exactly one history row for each aggregate transition; item changes append timestamped JSON events. Any processed item blocks buyer cancellation. Legacy whole-order transitions advance lagging items without regressions. COD final delivery creates one full-order collection.
+- **Instructions/summary:** Single-store prepaid orders prefer seller public receiving instructions; blank fields and mixed-store orders use marketplace defaults. Mixed-store payments still require admin review. Summary counts all orders; active/delivered item subtotals exclude cancelled/refunded orders and delivery fees. Not a payout report.
+- **Schema/API:** Migration `20261027080000_seller_fulfillment` adds store JSON instructions and item fulfillment status/history, backfilling current processing/shipped/delivered states without inventing timestamps. Migration applied locally; Prisma client regenerated; migration status reports up to date. Added GET `/api/seller/orders`, PATCH `/api/seller/orders/:id/status` (`itemId`, `status`), GET `/api/seller/sales-summary`, GET/PATCH `/api/seller/payment-instructions`. Buyer order responses include timelines.
+- **Checks:** API 84/84 and web 59/59 tests PASS (12 new tests). Covers seller scope/privacy, cross-seller mutation rejection, concurrent duplicate updates, status aggregation/history, cancellation safety, verified-payment gates, suspension, terminal orders, legacy status compatibility, instruction fallback/isolation, UI routing/actions/recovery/pagination, polling cleanup/manual refresh and Burmese tracking. `npm run typecheck` PASS; `npm run build` PASS (existing Zod annotation warnings); lint PASS with 0 errors and 7 existing warnings; diff whitespace check PASS. Implementation, migration and tests reviewed.
+- **Limitations:** No visual/browser/E2E verification. Tracking uses polling, not push or carrier tracking. COD cash collection is manually acknowledged and aggregated, not per-seller settlement. No partial refunds/cancellation, returns, payout report or historical item timestamps for migrated orders. Seller instruction editing follows the existing one-store workflow. No dependencies added; existing dependency-audit findings remain unresolved. T017 is next, not started.
+- **Suggested commit:** `feat: add seller fulfillment and buyer order tracking`.
 
 ### T014 and T015 — Payment submission, verification and order state machine (DONE)
 

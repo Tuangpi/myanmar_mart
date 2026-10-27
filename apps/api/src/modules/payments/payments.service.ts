@@ -1,5 +1,10 @@
 import type { Prisma } from '@prisma/client';
-import type { AuthUser, OrderPaymentsResponse, PaymentReviewOrder } from '@myanmart/shared';
+import type {
+  AuthUser,
+  FulfillmentEvent,
+  OrderPaymentsResponse,
+  PaymentReviewOrder,
+} from '@myanmart/shared';
 import { ORDER_TRANSITIONS } from '@myanmart/shared';
 import { getPrisma } from '../../lib/prisma.js';
 import { AppError } from '../../lib/errors.js';
@@ -31,6 +36,10 @@ function canSubmit(order: PaymentOrder) {
 }
 
 function serialize(order: PaymentOrder): OrderPaymentsResponse {
+  // Mixed-seller orders always use marketplace receiving instructions.
+  const stores = new Map(order.items.map((item) => [item.storeId, item.store]));
+  const store = stores.size === 1 ? [...stores.values()][0] : undefined;
+  const instructions = store?.paymentInstructions as Record<string, string> | undefined;
   return {
     orderId: order.id,
     orderNumber: order.orderNumber,
@@ -39,7 +48,10 @@ function serialize(order: PaymentOrder): OrderPaymentsResponse {
     status: order.status,
     paymentStatus: order.paymentStatus,
     instructions:
-      order.paymentMethod === 'COD' ? '' : env[`PAYMENT_INSTRUCTIONS_${order.paymentMethod}`],
+      order.paymentMethod === 'COD'
+        ? ''
+        : instructions?.[order.paymentMethod]?.trim() ||
+          env[`PAYMENT_INSTRUCTIONS_${order.paymentMethod}`],
     canSubmit: canSubmit(order),
     attempts: order.payments.map((p) => ({
       id: p.id,
@@ -80,7 +92,7 @@ export async function submitPayment(
       const order = await tx.order.findUniqueOrThrow({ where: { id }, include });
       if (!canSubmit(order)) throw AppError.conflict('Order cannot accept a payment attempt');
       if (!serialize(order).instructions.trim())
-        throw AppError.conflict('Marketplace payment instructions are not configured');
+        throw AppError.conflict('Payment instructions are not configured');
       await tx.payment.create({
         data: {
           orderId: id,
@@ -232,6 +244,24 @@ export async function transitionOrder(
       await tx.order.update({ where: { id }, data: { paymentStatus: 'VERIFIED' } });
     }
     await changeOrderStatus(tx, order, status, user.id);
+    if (status !== 'REFUNDED') {
+      const steps = ['CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
+      for (const item of order.items) {
+        // Legacy whole-order transitions must not regress items already fulfilled by a seller.
+        if (steps.indexOf(item.fulfillmentStatus) >= steps.indexOf(status)) continue;
+        const history = item.fulfillmentHistory as unknown as FulfillmentEvent[];
+        await tx.orderItem.update({
+          where: { id: item.id },
+          data: {
+            fulfillmentStatus: status,
+            fulfillmentHistory: [
+              ...history.map((event) => ({ ...event })),
+              { status, createdAt: new Date().toISOString() },
+            ],
+          },
+        });
+      }
+    }
     return serialize(await tx.order.findUniqueOrThrow({ where: { id }, include }));
   });
 }

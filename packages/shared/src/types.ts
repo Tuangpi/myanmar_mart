@@ -47,7 +47,34 @@ export interface OrderItemResponse {
   unitPrice: number;
   quantity: number;
   subtotal: number;
+  fulfillmentStatus?: string;
+  fulfillmentHistory?: FulfillmentEvent[];
 }
+
+export interface FulfillmentEvent {
+  status: string;
+  createdAt: string;
+}
+
+export interface SellerOrderResponse {
+  id: string;
+  orderNumber: string;
+  status: OrderStatus;
+  paymentMethod: PaymentMethod;
+  paymentStatus: string;
+  address: DeliveryAddress;
+  createdAt: string;
+  subtotal: number;
+  items: (OrderItemResponse & { allowedStatuses: string[] })[];
+}
+
+export interface SellerSalesSummary {
+  orderCount: number;
+  deliveredSubtotal: number;
+  activeSubtotal: number;
+}
+
+export type SellerPaymentInstructions = Record<'KBZPAY' | 'WAVEPAY' | 'BANK_TRANSFER', string>;
 
 export interface OrderResponse {
   canCancel: boolean;
@@ -68,6 +95,7 @@ export interface OrderResponse {
     subtotal: number;
     items: OrderItemResponse[];
   }[];
+  statusHistory?: FulfillmentEvent[];
 }
 
 export interface ApiSuccess<T> {

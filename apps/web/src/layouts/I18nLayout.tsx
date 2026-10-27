@@ -20,6 +20,7 @@ function I18nLayoutInner({ children }: { children: React.ReactNode }) {
           <a href="#/cart">{t('cart.title')}</a>
           <a href="#/orders">{t('ordersPage.title')}</a>
           <a href="#/seller/products">{t('sellerProducts.title')}</a>
+          <a href="#/seller/orders">{t('fulfillment.title')}</a>
         </nav>
         <a href="#/payments/seller">{t('payment.sellerReview')}</a>
         <a href="#/payments/admin">{t('payment.adminReview')}</a>

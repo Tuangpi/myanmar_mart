@@ -10,9 +10,10 @@ export async function requestOrder<T>(
   path: string,
   body?: unknown,
   signal?: AbortSignal,
+  method?: 'PATCH',
 ): Promise<T> {
   const response = await fetch(path, {
-    method: body === undefined ? 'GET' : 'POST',
+    method: method ?? (body === undefined ? 'GET' : 'POST'),
     credentials: 'include',
     signal,
     ...(body === undefined

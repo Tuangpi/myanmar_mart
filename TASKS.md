@@ -119,7 +119,7 @@ All tasks start at `TODO` unless noted. A task is `DONE` only when its expected 
 
 ### T016 — Seller fulfillment and buyer order tracking
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** `GET /api/seller/orders` and `PATCH /api/seller/orders/:id/status` limited to the seller's own items; seller order board; buyer-facing live status timeline; seller payment instructions management and a basic sales summary.
 - **Completion check:** A seller sees only orders containing their products, and API tests confirm a seller cannot update another seller's order item.
 - **Dependencies:** T015

@@ -36,6 +36,24 @@ function OrderSummary({ order }: { order: OrderResponse }) {
                 <span>
                   {item.productName} × {item.quantity}
                 </span>
+                {item.fulfillmentStatus && (
+                  <p>
+                    {t('fulfillment.itemStatus')}:{' '}
+                    {t(`ordersPage.statuses.${item.fulfillmentStatus}`)}
+                  </p>
+                )}
+                {!!item.fulfillmentHistory?.length && (
+                  <ol className="pl-4 border-l">
+                    {item.fulfillmentHistory.map((event, index) => (
+                      <li key={index}>
+                        {t(`ordersPage.statuses.${event.status}`)} —{' '}
+                        <time dateTime={event.createdAt}>
+                          {new Date(event.createdAt).toLocaleString()}
+                        </time>
+                      </li>
+                    ))}
+                  </ol>
+                )}
                 <span>
                   {' '}
                   — {formatMMK(item.unitPrice)} / {t('ordersPage.unit')} —{' '}
@@ -73,6 +91,35 @@ function OrdersContent({ id }: { id?: string }) {
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const submitting = useRef(false);
+
+  useEffect(() => {
+    if (!id || busy) return;
+    let active = true;
+    let controller: AbortController | undefined;
+    const timer = window.setInterval(() => {
+      if (submitting.current || controller) return;
+      controller = new AbortController();
+      requestOrder<OrderResponse>(
+        `/api/orders/${encodeURIComponent(id)}`,
+        undefined,
+        controller.signal,
+      )
+        .then((result) => {
+          if (active && !submitting.current) setOrder(result);
+        })
+        .catch(() => {
+          /* Keep the last successful state. Manual refresh can report errors. */
+        })
+        .finally(() => {
+          controller = undefined;
+        });
+    }, 15000);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+      controller?.abort();
+    };
+  }, [id, reload, busy]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -203,6 +250,21 @@ function OrdersContent({ id }: { id?: string }) {
             <time dateTime={order.createdAt}>{date(order.createdAt)}</time>
           </p>
           <OrderSummary order={order} />
+          <section className="space-y-2">
+            <h4 className="font-semibold">{t('fulfillment.timeline')}</h4>
+            <p>{t('fulfillment.refreshNote')}</p>
+            <button disabled={busy} onClick={() => setReload((n) => n + 1)}>
+              {t('payment.retry')}
+            </button>
+            <ol>
+              {order.statusHistory?.map((event, index) => (
+                <li key={index}>
+                  {t(`ordersPage.statuses.${event.status}`)} —{' '}
+                  <time dateTime={event.createdAt}>{date(event.createdAt)}</time>
+                </li>
+              ))}
+            </ol>
+          </section>
           <OrderPayments orderId={order.id} onChange={() => setReload((value) => value + 1)} />
           <section className="space-y-2">
             <h4 className="font-semibold">{t('checkout.address')}</h4>

@@ -150,6 +150,21 @@ export type CheckoutInput = z.infer<typeof checkoutSchema>;
 export type DeliveryAddress = z.infer<typeof deliveryAddressSchema>;
 export const orderIdParamSchema = z.object({ id: z.string().uuid() });
 
+export const sellerFulfillmentSchema = z
+  .object({
+    itemId: z.string().uuid(),
+    status: z.enum(['PROCESSING', 'SHIPPED', 'DELIVERED']),
+  })
+  .strict();
+
+export const sellerPaymentInstructionsSchema = z
+  .object({
+    KBZPAY: z.string().trim().max(2000),
+    WAVEPAY: z.string().trim().max(2000),
+    BANK_TRANSFER: z.string().trim().max(2000),
+  })
+  .strict();
+
 export const paymentSubmissionSchema = z
   .object({
     transactionReference: z.string().trim().min(1).max(200),

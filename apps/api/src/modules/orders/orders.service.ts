@@ -4,6 +4,7 @@ import type {
   CheckoutInput,
   CheckoutQuote,
   DeliveryAddress,
+  FulfillmentEvent,
   OrderResponse,
 } from '@myanmart/shared';
 import { env } from '../../config/env.js';
@@ -13,6 +14,7 @@ import { cartAction } from '../cart/cart.service.js';
 import { changeOrderStatus } from './order-state.js';
 
 const orderInclude = {
+  statusHistory: { orderBy: [{ createdAt: 'asc' as const }, { id: 'asc' as const }] },
   payments: { select: { status: true } },
   items: {
     include: { store: true },
@@ -28,6 +30,7 @@ function canBuyerCancel(order: StoredOrder): boolean {
       : order.status === 'PENDING_PAYMENT';
   return (
     eligibleStatus &&
+    order.items.every((item) => item.fulfillmentStatus === 'CONFIRMED') &&
     ['PENDING', 'REJECTED'].includes(order.paymentStatus) &&
     !order.payments.some((payment) =>
       ['SUBMITTED', 'VERIFIED', 'REFUNDED'].includes(payment.status),
@@ -57,6 +60,8 @@ function serialize(order: StoredOrder): OrderResponse {
       unitPrice: item.unitPrice,
       quantity: item.quantity,
       subtotal: item.subtotal,
+      fulfillmentStatus: item.fulfillmentStatus,
+      fulfillmentHistory: item.fulfillmentHistory as unknown as FulfillmentEvent[],
     });
   }
   return {
@@ -72,6 +77,10 @@ function serialize(order: StoredOrder): OrderResponse {
     status: order.status,
     createdAt: order.createdAt.toISOString(),
     sellerGroups: [...groups.values()],
+    statusHistory: order.statusHistory.map((event) => ({
+      status: event.newStatus,
+      createdAt: event.createdAt.toISOString(),
+    })),
   };
 }
 
