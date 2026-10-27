@@ -208,7 +208,10 @@
     "approve": " ချ企",
     "reject": " ချ企",
     "suspend": " ချ企",
-    "activate": " ချ企"
+    "activate": " ချ企",
+    "payments": " ချ企",
+    "audit": " Audit",
+    "reports": " Reports"
   },
   "pagination": {
     "page": " Page",

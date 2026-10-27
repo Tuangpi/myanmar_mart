@@ -163,6 +163,16 @@ export async function updateSellerStatus(req: Request, res: Response, next: Next
       });
     }
 
+    await prisma.auditLog.create({
+      data: {
+        actorId: req.user?.id ?? null,
+        action: 'seller.status.updated',
+        entityType: 'store',
+        entityId: store.id,
+        metadata: { status: input.status, ownerId: store.ownerId },
+      },
+    });
+
     res.json({ success: true, data: updated });
   } catch (err) {
     next(err);

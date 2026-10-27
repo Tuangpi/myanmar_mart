@@ -11,11 +11,21 @@ export async function changeOrderStatus(
 ) {
   if (!ORDER_TRANSITIONS[order.status].includes(status))
     throw AppError.conflict(`Invalid order transition: ${order.status} → ${status}`);
-  return tx.order.update({
+  const updated = await tx.order.update({
     where: { id: order.id },
     data: {
       status,
       statusHistory: { create: { oldStatus: order.status, newStatus: status, changedBy: actor } },
     },
   });
+  await tx.auditLog.create({
+    data: {
+      actorId: actor || null,
+      action: 'order.status.changed',
+      entityType: 'order',
+      entityId: order.id,
+      metadata: { oldStatus: order.status, newStatus: status },
+    },
+  });
+  return updated;
 }

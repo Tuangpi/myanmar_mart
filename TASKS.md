@@ -128,14 +128,14 @@ All tasks start at `TODO` unless noted. A task is `DONE` only when its expected 
 
 ### T017 — Admin dashboard and moderation
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** `GET /api/admin/sellers`, `PATCH /api/admin/sellers/:id/status`, `GET /api/admin/products`, `GET /api/admin/orders`, `GET /api/admin/payments`; dashboard, seller management, product moderation, order management, and payment review screens; category management; marketplace settings.
 - **Completion check:** An admin can approve a seller and moderate a listing; API tests confirm every admin route rejects buyer and seller roles.
 - **Dependencies:** T008
 
 ### T018 — Audit trail and marketplace reports
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** Recorded payment verification and administrative actions exposed through the admin UI; basic marketplace reports on orders, revenue, and sellers.
 - **Completion check:** An administrative action appears in the audit view with actor and timestamp, and a report renders totals for seeded data.
 - **Dependencies:** T017

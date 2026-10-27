@@ -24,6 +24,7 @@ function I18nLayoutInner({ children }: { children: React.ReactNode }) {
         </nav>
         <a href="#/payments/seller">{t('payment.sellerReview')}</a>
         <a href="#/payments/admin">{t('payment.adminReview')}</a>
+          <a href="#/admin">{t('admin.dashboard')}</a>
         <div className="flex gap-2">
           <button
             onClick={() => setLocale('en')}

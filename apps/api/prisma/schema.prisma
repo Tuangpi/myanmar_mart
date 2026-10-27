@@ -82,6 +82,7 @@ model User {
   carts       Cart[]
   orders      Order[]
   stores      Store[]
+  auditLogs   AuditLog[]
 
   @@index([email])
   @@index([role])
@@ -288,4 +289,21 @@ model OrderStatusHistory {
   @@index([orderId])
   @@index([createdAt])
   @@map("order_status_history")
+}
+
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  actorId    String?  @map("actor_id")
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  metadata   Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([actorId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
 }

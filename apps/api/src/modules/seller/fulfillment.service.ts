@@ -112,6 +112,15 @@ export async function fulfillItem(userId: string, id: string, itemId: string, st
           },
         });
         await tx.order.update({ where: { id }, data: { paymentStatus: 'VERIFIED' } });
+        await tx.auditLog.create({
+          data: {
+            actorId: userId,
+            action: 'payment.collected',
+            entityType: 'order',
+            entityId: id,
+            metadata: { method: 'COD' },
+          },
+        });
       }
     }
     return serialize(await tx.order.findUniqueOrThrow({ where: { id }, include }), userId);

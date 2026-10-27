@@ -7,6 +7,7 @@ import { CartPage } from './pages/CartPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { PaymentReviewPage } from './pages/PaymentReviewPage';
+import { AdminPage } from './pages/AdminPage';
 import { SellerOrdersPage } from './pages/SellerOrdersPage';
 
 function getHashSegment(resource: string): string | null {
@@ -29,6 +30,7 @@ export function App() {
   const [orders, setOrders] = useState(window.location.hash === '#/orders');
   const [orderId, setOrderId] = useState(() => getHashSegment('orders'));
   const [paymentRole, setPaymentRole] = useState(() => getHashSegment('payments'));
+const [admin, setAdmin] = useState(window.location.hash === '#/admin');
 
   useEffect(() => {
     const onHashChange = () => {
@@ -41,6 +43,7 @@ export function App() {
       setOrders(window.location.hash === '#/orders');
       setOrderId(getHashSegment('orders'));
       setPaymentRole(getHashSegment('payments'));
+      setAdmin(window.location.hash === '#/admin');
     };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
@@ -58,5 +61,6 @@ export function App() {
   if (detailId) {
     return <ProductDetailPage key={detailId} id={detailId} />;
   }
+  if (admin) return <AdminPage />;
   return <CatalogPage />;
 }

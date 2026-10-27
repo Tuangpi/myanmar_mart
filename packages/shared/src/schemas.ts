@@ -110,6 +110,12 @@ export const sellerProductIdParamSchema = z.object({
 
 export type SellerProductIdParam = z.infer<typeof sellerProductIdParamSchema>;
 
+export const adminProductStatusSchema = z.object({
+  status: z.enum(productStatuses),
+});
+
+export type AdminProductStatusInput = z.infer<typeof adminProductStatusSchema>;
+
 export const sellerProductStockSchema = z
   .object({
     stock: z.number().int().min(0).max(2147483647),
@@ -117,6 +123,7 @@ export const sellerProductStockSchema = z
   .strict();
 
 export type SellerProductStockInput = z.infer<typeof sellerProductStockSchema>;
+
 
 // --- Cart schemas (T011) ---
 export const cartQuantitySchema = z

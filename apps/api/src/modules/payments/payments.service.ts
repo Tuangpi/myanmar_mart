@@ -188,6 +188,15 @@ export async function reviewPayment(
       data: { status: decision, verifiedBy: user.id },
     });
     await tx.order.update({ where: { id }, data: { paymentStatus: decision } });
+    await tx.auditLog.create({
+      data: {
+        actorId: user.id,
+        action: 'payment.reviewed',
+        entityType: 'payment',
+        entityId: paymentId,
+        metadata: { decision, orderId: id },
+      },
+    });
     await changeOrderStatus(
       tx,
       order,
@@ -224,6 +233,15 @@ export async function transitionOrder(
         },
       });
       await tx.order.update({ where: { id }, data: { paymentStatus: 'REFUNDED' } });
+      await tx.auditLog.create({
+        data: {
+          actorId: user.id,
+          action: 'payment.refunded',
+          entityType: 'order',
+          entityId: id,
+          metadata: { reference },
+        },
+      });
     } else if (
       order.paymentMethod !== 'COD' &&
       (order.paymentStatus !== 'VERIFIED' || !order.payments.some((p) => p.status === 'VERIFIED'))
@@ -242,6 +260,15 @@ export async function transitionOrder(
         },
       });
       await tx.order.update({ where: { id }, data: { paymentStatus: 'VERIFIED' } });
+      await tx.auditLog.create({
+        data: {
+          actorId: user.id,
+          action: 'payment.collected',
+          entityType: 'order',
+          entityId: id,
+          metadata: { method: 'COD' },
+        },
+      });
     }
     await changeOrderStatus(tx, order, status, user.id);
     if (status !== 'REFUNDED') {

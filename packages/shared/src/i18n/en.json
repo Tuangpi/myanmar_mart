@@ -208,7 +208,10 @@
     "approve": "Approve",
     "reject": "Reject",
     "suspend": "Suspend",
-    "activate": "Activate"
+    "activate": "Activate",
+    "payments": "Payments",
+    "audit": "Audit",
+    "reports": "Reports"
   },
   "pagination": {
     "page": "Page",

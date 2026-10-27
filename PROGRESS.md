@@ -3,10 +3,10 @@
 ## Current State
 
 - **Current task:** None.
-- **Most recently completed:** T016 — Seller fulfillment and buyer order tracking.
-- **Unfinished work:** T017–T020 in `TASKS.md`.
+- **Most recently completed:** T018 — Audit trail and marketplace reports.
+- **Unfinished work:** T019–T020 in `TASKS.md`.
 - **Blockers:** None.
-- **Recommended next task:** T017 — Admin dashboard and moderation.
+- **Recommended next task:** T019 — Test suite.
 
 ### Verified environment
 
@@ -144,6 +144,18 @@ Checked 2026-10-22:
 - **Checks:** Full `npm test` PASS: API 68/68, web 44/44. Includes cancellation ownership/eligibility, multi-seller stock restoration, concurrent cancellation, single history row, full rollback after partial restoration, deleted products, history/detail routing, pagination, confirmation, translations, uncertain response recovery and stale navigation. `npm run typecheck` PASS; `npm run build` PASS (existing Zod annotation warnings); `npm run lint` PASS (0 errors, 7 existing warnings); `git diff --check` PASS. Reviewed edited/new code and tests.
 - **Limitations:** Requires an existing authenticated session. No visual/browser verification, refunds, partial cancellation or automatic pending-payment expiry. Full payment/order transition map and verification remain T015; per-seller fulfillment remains T016. Existing dependency-audit findings remain unresolved. Phase 3 complete; T014 is next, not started.
 - **Suggested commit:** `feat: add buyer order history and cancellation`.
+
+### T017 — Admin dashboard and moderation (DONE)
+
+- **Result:** Admin-only APIs for seller approval/status, product moderation, order listing, and payment review; dashboard at `#/admin` with seller/product/order/payment tabs. Product status can be changed through `/api/admin/products/:id/status` or `/api/admin/products/:id`; seller status accepts `status` or action aliases.
+- **Checks:** API 84/84 and web 59/59 tests PASS; `npm run typecheck` PASS; `npm run build` PASS; lint PASS with 0 errors and 7 existing warnings.
+- **Limitations:** Category management and marketplace settings are not implemented; payments tab links to the existing payment review screen rather than embedding it.
+
+### T018 — Audit trail and marketplace reports (DONE)
+
+- **Result:** `AuditLog` model and migration record seller status, product status, order status, payment review/refund/COD collection actions with actor, entity, metadata and timestamp. Admin-only `/api/admin/audit` and `/api/admin/audit-logs` return paginated logs with actor details; `/api/admin/reports` and `/api/admin/report` return seller/product/order/payment/revenue aggregates. Admin UI adds Audit and Reports tabs rendering live data.
+- **Checks:** API 84/84 and web 59/59 tests PASS; `npm run typecheck` PASS; manual audit pagination/report shape verified against frontend.
+- **Limitations:** No filtering/search on audit logs; report revenue uses delivered order totals; no CSV/export.
 
 ## Notes
 

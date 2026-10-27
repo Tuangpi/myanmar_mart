@@ -202,6 +202,25 @@ export async function listOrders(userId: string, page: number, pageSize: number)
   };
 }
 
+export async function listAdminOrders(page: number, pageSize: number) {
+  const [orders, total] = await getPrisma().$transaction([
+    getPrisma().order.findMany({
+      include: orderInclude,
+      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    getPrisma().order.count(),
+  ]);
+  return {
+    items: orders.map(serialize),
+    page,
+    pageSize,
+    total,
+    totalPages: Math.ceil(total / pageSize),
+  };
+}
+
 export async function getOrder(userId: string, id: string): Promise<OrderResponse> {
   const order = await getPrisma().order.findFirst({
     where: { id, buyerId: userId },

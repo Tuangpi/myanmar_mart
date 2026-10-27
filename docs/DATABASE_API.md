@@ -90,6 +90,8 @@ Order list/detail routes return only orders belonging to the authenticated buyer
 - GET `/api/admin/products`
 - GET `/api/admin/orders`
 - GET `/api/admin/payments`
+- GET `/api/admin/audit`
+- GET `/api/admin/reports`
 
 ## Security
 - Verify ownership and role for every protected operation.
