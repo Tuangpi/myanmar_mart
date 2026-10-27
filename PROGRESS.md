@@ -3,10 +3,10 @@
 ## Current State
 
 - **Current task:** None.
-- **Most recently completed:** T018 — Audit trail and marketplace reports.
-- **Unfinished work:** T019–T020 in `TASKS.md`.
+- **Most recently completed:** T019 — Test suite.
+- **Unfinished work:** T020 in `TASKS.md`.
 - **Blockers:** None.
-- **Recommended next task:** T019 — Test suite.
+- **Recommended next task:** T020 — Production configuration and deployment.
 
 ### Verified environment
 
@@ -156,6 +156,12 @@ Checked 2026-10-22:
 - **Result:** `AuditLog` model and migration record seller status, product status, order status, payment review/refund/COD collection actions with actor, entity, metadata and timestamp. Admin-only `/api/admin/audit` and `/api/admin/audit-logs` return paginated logs with actor details; `/api/admin/reports` and `/api/admin/report` return seller/product/order/payment/revenue aggregates. Admin UI adds Audit and Reports tabs rendering live data.
 - **Checks:** API 84/84 and web 59/59 tests PASS; `npm run typecheck` PASS; manual audit pagination/report shape verified against frontend.
 - **Limitations:** No filtering/search on audit logs; report revenue uses delivered order totals; no CSV/export.
+
+### T019 — Test suite (DONE)
+
+- **Result:** Added `apps/api/src/modules/admin/admin.test.ts` covering all admin GET/PATCH routes for no-auth, buyer, seller, and admin access plus audit/report reads. Added `apps/web/src/pages/AdminPage.test.tsx` covering seller loading, Audit and Reports tabs, and forbidden-error handling. Existing Vitest suites already cover buyer/seller authorization, concurrent purchases/stock consistency, duplicate submits, cancellation, payments, fulfillment, and buyer-to-seller workflows.
+- **Checks:** API 118/118 and web 61/61 tests PASS with `--no-file-parallelism` for API; `npm run typecheck` PASS; lint not rerun beyond changed test files.
+- **Limitations:** Critical Playwright browser E2E tests are not implemented; browser-level flows remain covered by API integration and component tests. API tests still require `--no-file-parallelism` due to shared test database cleanup.
 
 ## Notes
 

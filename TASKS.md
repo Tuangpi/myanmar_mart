@@ -144,7 +144,7 @@ All tasks start at `TODO` unless noted. A task is `DONE` only when its expected 
 
 ### T019 — Test suite
 
-- **Status:** TODO
+- **Status:** DONE
 - **Expected result:** Unit and API integration tests (Vitest) and critical end-to-end tests (Playwright) covering buyer, seller, and admin authorization, concurrent purchases and stock consistency, and the buyer-to-seller purchasing workflow.
 - **Completion check:** The full suite passes; a concurrency test proves no overselling under parallel checkout attempts.
 - **Dependencies:** T012, T015
